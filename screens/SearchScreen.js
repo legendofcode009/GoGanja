@@ -13,16 +13,6 @@ import React, { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import ClinicCard from "../components/ClinicCard.js"
-import {
-  BottomModal,
-  ModalButton,
-  ModalContent,
-  ModalFooter,
-  ModalTitle,
-  SlideAnimation,
-} from "react-native-modals";
-import PageHeader from "../components/PageHeader.js";
-import { Icon } from "@rneui/themed";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -31,7 +21,6 @@ const HomeScreen = () => {
   const [rooms, setRooms] = useState(1);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const searchPlaces = (place) => {
     if (!route.params || !selectedDates) {
