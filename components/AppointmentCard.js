@@ -2,16 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import {Entypo, Ionicons} from "@expo/vector-icons"
-import { Divider } from '@rneui/themed';
+import { Divider, Tooltip } from '@rneui/themed';
 
 
 
 const AppointmentCard = () => {
   const navigation = useNavigation();
-  const [like, setLike] = useState(false);
-  const toggleLike = () => {
-    setLike(!like);
-  }
+  const [open, setOpen] = useState(false);
+
   return (
     <View style={styles.card}>
         <Pressable style = {styles.headContainer} onPress={() => navigation.navigate("AppointmentDetail")}><Text style = {styles.headText}>Name Procedure</Text><Text style = {styles.timeText}>20 May 2024 - 12:00</Text></Pressable>

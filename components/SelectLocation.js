@@ -5,7 +5,7 @@ import {Text, View, StyleSheet, Image, Pressable} from "react-native";
 
 const SelectLocation = () =>{
 
-    const [activeSection, setActiveSection] = useState(null);
+    const [activeSection, setActiveSection] = useState(0);
 
     const sections = [
         { name: 'Any Location' },
@@ -29,14 +29,14 @@ const SelectLocation = () =>{
             {sections.map((item, index) => (
                 
                 <Pressable key = {index} onPress={() => handlePress(index)} style = {activeSection === index ? styles.activeChip : styles.chip}>
-                        <Text style = {activeSection === index ? styles.activeText : styles.text}>{item.name}</Text>                
+                        <Text style = {activeSection === index ? styles.activeLocationText : styles.locationText}>{item.name}</Text>                
                 </Pressable>
             ))}
         </View>
     )
 }
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flexWrap: "wrap",
         justifyContent: "space-around",
@@ -64,11 +64,11 @@ styles = StyleSheet.create({
         borderColor: "#DEBA5C",
         backgroundColor: "#DEBA5C",
     },
-    text: {
+    locationText: {
         fontSize: 14,
         fontWeight: "600",
     },
-    activeText: {
+    activeLocationText: {
         fontSize: 14 ,
         fontWeight: "600",
         color: "#fafafa"

@@ -63,7 +63,7 @@ const Profile = () => {
                         style={[styles.switch, isDate ? styles.active : styles.inactive]} 
                         onPress={pressDate}
                     >
-                        <Text style={[styles.text, isDate ? styles.activeText : styles.inactiveText]}>
+                        <Text style={[styles.switchText, isDate ? styles.activeSwitchText : styles.inactiveSwitchText]}>
                             English
                         </Text>
                     </TouchableOpacity>
@@ -71,7 +71,7 @@ const Profile = () => {
                         style={[styles.switch, !isDate ? styles.active : styles.inactive]} 
                         onPress={pressMonth}
                     >
-                        <Text style={[styles.text, !isDate ? styles.activeText : styles.inactiveText]}>
+                        <Text style={[styles.switchText, !isDate ? styles.activeSwitchText : styles.inactiveSwitchText]}>
                             Thai
                         </Text>
                     </TouchableOpacity>
@@ -101,7 +101,7 @@ const Profile = () => {
     )
 }
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
     headerContainer: {
         height:100, 
         justifyContent: "flex",
@@ -169,10 +169,6 @@ styles = StyleSheet.create({
         borderColor: "#B1D5B9",
         paddingHorizontal: 24,
       },
-    Text: {
-        fontSize: 16,
-        fontWeight: "500",
-    },
     switchContainer: {
         flexDirection: 'row',
         borderRadius: 24,
@@ -194,14 +190,14 @@ styles = StyleSheet.create({
     inactive: {
         backgroundColor: 'transparent', // Inactive switch color
     },
-    text: {
+    switchText: {
         fontSize: 14,
         fontWeight: "600"
     },
-    activeText: {
+    activeSwitchText: {
         color: '#314435', // Active text color
     },
-    inactiveText: {
+    inactiveSwitchText: {
         color: '#fafafa', // Inactive text color
     },
     button: {

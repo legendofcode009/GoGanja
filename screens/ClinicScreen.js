@@ -173,7 +173,7 @@ const ClinicScreen = () => {
     )
 }
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
     pgcontainer: {
         height: "100%",
         width: "100%",

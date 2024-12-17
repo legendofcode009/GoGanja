@@ -7,32 +7,32 @@ const Tour = () => {
         <>
             <View style = {styles.container}>
                 <Image source={require("../assets/tour.png")} />
-                <Text style = {styles.headtext}>Soon - Tour</Text>
-                <Text style = {styles.midtext}>We are working on developing this section</Text>
-                <Text style = {styles.text}>Subscribe for notifications so you don't miss an update</Text>
+                <Text style = {styles.headText}>Soon - Tour</Text>
+                <Text style = {styles.midText}>We are working on developing this section</Text>
+                <Text style = {styles.smText}>Subscribe for notifications so you don't miss an update</Text>
                 <Pressable style = {styles.button}><Text style = {styles.buttonText}>Subscribe</Text></Pressable>
             </View>
         </>
     )
 }
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
         padding: 24,
     },
-    headtext: {
+    headText: {
         fontSize: 24,
         fontWeight: "500",
         margin: 16,
     },
-    midtext: {
+    midText: {
         fontSize: 18,
         marginBottom: 8 
     },
-    text: {
+    smText: {
         fontSize: 16,
         fontWeight: "500",
         textAlign: "center",

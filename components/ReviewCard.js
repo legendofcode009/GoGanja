@@ -12,13 +12,13 @@ const ReviewCard = () => {
             <View style = {styles.cardbottom}>
                 <View style = {styles.circleimage}><Image resizeMode="cover" source={require("../assets/avatar1.png")} ></Image></View>
                 <View style = {{width: 24}}></View>
-                <View><Text style = {styles.cardbigtext}>Monica</Text><Text style = {styles.cardsmtext}>Warsaw, Poland</Text></View>
+                <View><Text style = {styles.cardbgtext}>Monica</Text><Text style = {styles.cardsmtext}>Warsaw, Poland</Text></View>
             </View>
         </View>
     )
 } 
 
-styles = StyleSheet.create({ 
+const styles = StyleSheet.create({ 
     cardcontainer: {
         width: 267, 
         height: 226,
