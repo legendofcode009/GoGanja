@@ -6,13 +6,15 @@ import {setDoc,doc} from 'firebase/firestore'
 import { useNavigation } from "@react-navigation/native";
 
 const RegisterScreen = () => {
+    const [name, setName] = useState();
     const [email,setEmail] = useState();
     const [password,setPassword] = useState();
+    const [confirmPassword,setConfirmPassword] = useState();
     const [phoneNumber,setPhoneNumber] = useState();
     const navigation = useNavigation();
 
     const register = () => {
-        if(email === "" || password === "" || phoneNumber === "") {
+        if (!name || !email || !password || !confirmPassword || !phoneNumber) {
             Alert.alert(
                 'Invalid Details', 
                 'Please enter all the credentials', 
@@ -28,13 +30,25 @@ const RegisterScreen = () => {
             );
             return; // Exit the function if inputs are invalid
         }
-
+        if (password !== confirmPassword) {
+            Alert.alert(
+                'Invalid Details', 
+                'Password and Confirm Password do not match', 
+                [
+                    {text: 'OK', onPress: () => console.log('OK Pressed')},
+                ],
+                {cancelable: false}
+            );
+            return;
+        }
+        
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredentials) => {
                 const user = userCredentials.user;
                 const uid = user.uid;
 
                 return setDoc(doc(db, "users", uid), { 
+                    name: name,
                     email: user.email,
                     phoneNumber: phoneNumber
                 });
@@ -61,6 +75,13 @@ const RegisterScreen = () => {
                 
                 <View style={styles.inputcontainer}>
                     <TextInput
+                        value={name}
+                        onChangeText={(text) => setName(text)}
+                        placeholder="Name"
+                        placeholderTextColor={"#808080"}
+                        style={styles.textinput}
+                    />
+                    <TextInput
                         value={email}
                         onChangeText={(text) => setEmail(text)}
                         placeholder="Email"
@@ -78,6 +99,14 @@ const RegisterScreen = () => {
                         value={password}
                         onChangeText={(text) => setPassword(text)}
                         placeholder="Password"
+                        placeholderTextColor={"#808080"}
+                        style={styles.textinput}
+                        secureTextEntry={true} // Ensure password is hidden
+                    />
+                    <TextInput
+                        value={confirmPassword}
+                        onChangeText={(text) => setConfirmPassword(text)}
+                        placeholder="Confirm Password"
                         placeholderTextColor={"#808080"}
                         style={styles.textinput}
                         secureTextEntry={true} // Ensure password is hidden

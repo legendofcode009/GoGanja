@@ -2,6 +2,8 @@ import { Pressable, Text, View, StyleSheet, Image, TextInput, TouchableOpacity }
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 
 const Profile = () => {
     const [email,setEmail] = useState("");
@@ -9,6 +11,17 @@ const Profile = () => {
     const [phoneNumber,setPhoneNumber] = useState("");
     const navigation = useNavigation();
     const [isDate, setIsDate] = useState(true); // true for Dates, false for Months
+
+    const handleLogout = () => {
+        signOut(auth)
+            .then(() => {
+                console.log("User signed out!");
+                navigation.navigate("Login"); // Navigate to the login screen after logout
+            })
+            .catch((error) => {
+                console.error("Error signing out: ", error);
+            });
+    };
 
     const pressDate = () => {
         if(!isDate) setIsDate(true);
@@ -23,7 +36,7 @@ const Profile = () => {
             <View style = {styles.headerContainer}>
                 <Ionicons name = "notifications-outline" style = {styles.headerIconleft} size = {24} />
                 <Text style={styles.headerText}>Profile</Text>
-                <Ionicons name = "log-out-outline" style = {styles.headerIcon} size = {24} />
+                <Ionicons name = "log-out-outline" style = {styles.headerIcon} size = {24} onPress={handleLogout} />
             </View>
             <View style = {styles.container}>
                 <View style = {styles.imageContainer}><Image style = {styles.image} source = {require("../assets/avatar.jpg")} /></View>
@@ -35,6 +48,7 @@ const Profile = () => {
                 <View style={styles.inputcontainer}>
                     <TextInput
                         value={email}
+                        editable={false}
                         onChangeText={(text) => setEmail(text)}
                         placeholder="Email"
                         placeholderTextColor={"#808080"}
@@ -53,6 +67,7 @@ const Profile = () => {
                         placeholder="Password"
                         placeholderTextColor={"#808080"}
                         style={ styles.textinput }
+                        secureTextEntry
                     />
                 </View>
                 <View style = {styles.rowContainer}>

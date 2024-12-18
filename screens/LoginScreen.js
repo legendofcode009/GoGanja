@@ -7,6 +7,7 @@ import {
   TextInput,
   Pressable,
   Image,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -19,12 +20,55 @@ const LoginScreen = () => {
   const navigation = useNavigation();
 
   const login = () => {
-    signInWithEmailAndPassword(auth,email,password).then((userCredential) => {
-      console.log("user credential", userCredential);
-      const user = userCredential.user;
-      console.log("user details", user);
-    })
-  }
+    if (!email || !password) {
+        Alert.alert(
+            'Invalid Details', 
+            'Please enter both email and password', 
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {text: 'OK', onPress: () => console.log('OK Pressed')},
+            ],
+            {cancelable: false}
+        );
+        return; // Exit the function if inputs are invalid
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            console.log("user credential", userCredential);
+            const user = userCredential.user;
+            console.log("user details", user);
+            navigation.navigate("Main"); // Navigate to Main after successful login
+        })
+        .catch((error) => {
+            console.error("Login failed", error); // Log the error for debugging
+            let errorMessage = 'An error occurred during login. Please try again.';
+
+            // Handle specific Firebase authentication errors
+            switch (error.code) {
+                case 'auth/wrong-password':
+                    errorMessage = 'The password is incorrect. Please try again.';
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage = 'No user found with this email. Please check your email or register.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'The email address is not valid. Please check and try again.';
+                    break;
+                case 'auth/user-disabled':
+                    errorMessage = 'This user account has been disabled. Please contact support.';
+                    break;
+                default:
+                    errorMessage = error.message; // Use the default error message from Firebase
+            }
+
+            Alert.alert('Login Error', errorMessage);
+        });
+  };
 
   useEffect(() => {
     try {
@@ -70,10 +114,11 @@ const LoginScreen = () => {
             placeholder="Password"
             placeholderTextColor={"#808080"}
             style={ styles.textinput }
+            secureTextEntry
           />
         </View>
         <Pressable
-          onPress={() => navigation.navigate("Main")}
+          onPress={login}
           style={ styles.button }
         >
           <Text style={{fontSize: 20, color: "#fafafa", fontWeight: "500"}}>
