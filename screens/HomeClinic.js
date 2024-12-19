@@ -21,7 +21,6 @@ const HomeClinic = () => {
   const navigation = useNavigation();
   const [clinics, setClinics] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchClinics();
@@ -54,6 +53,7 @@ const HomeClinic = () => {
     const [localSearchQuery, setLocalSearchQuery] = useState('');
     const localOnSearchSubmit = () => {
       onSearchSubmit(localSearchQuery);
+      setLocalSearchQuery('');
     };
     return (
       <View style={styles.headerContainer}>
@@ -62,9 +62,9 @@ const HomeClinic = () => {
           placeholderTextColor="black"
           style={styles.searchInput}
           value={localSearchQuery}
-        onChangeText={setLocalSearchQuery}
-        onSubmitEditing={localOnSearchSubmit}
-        returnKeyType="search"
+          onChangeText={setLocalSearchQuery}
+          onSubmitEditing={localOnSearchSubmit}
+          returnKeyType="search"
       />
       <Feather name="search" size={20} color="#808080" style={styles.searchIcon} />
       <Pressable

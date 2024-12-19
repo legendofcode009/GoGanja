@@ -25,7 +25,7 @@ const Notch = () => (
   <View style={styles.notch} />
 );
 
-const SelectPrice = () => {
+const SelectPrice = ({price, setPrice}) => {
     const [low, setLow] = useState(0);
     const [high, setHigh] = useState(1000);
 
@@ -37,6 +37,7 @@ const SelectPrice = () => {
     const handleValueChange = useCallback((low, high) => {
         setLow(low);
         setHigh(high);
+        setPrice({ low, high });
     }, []);
 
     return (

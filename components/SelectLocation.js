@@ -3,7 +3,7 @@ import {Text, View, StyleSheet, Image, Pressable} from "react-native";
 
 
 
-const SelectLocation = () =>{
+const SelectLocation = ({location, setLocation}) =>{
 
     const [activeSection, setActiveSection] = useState(0);
 
@@ -22,6 +22,7 @@ const SelectLocation = () =>{
         setActiveSection((prevActiveSection) => 
             prevActiveSection === index ? null : index
         );
+        setLocation(sections[index].name);
     }, []);
 
     return(

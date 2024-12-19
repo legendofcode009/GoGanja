@@ -76,7 +76,6 @@ const SearchScreen = () => {
           ListEmptyComponent={
             <Text style={styles.noResultsText}>No clinics found</Text>
           }
-          contentContainerStyle={{ paddingBottom: 150 }}
         />
       </SafeAreaView>
     </>
@@ -139,6 +138,7 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#fafafa",
     paddingHorizontal: 20,
+    paddingTop: 10,
     flexDirection: "column",
   },
   noResultsText: {

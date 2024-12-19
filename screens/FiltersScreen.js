@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Button, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import SelectPrice from '../components/SelectPrice';
 import PageHeader from '../components/PageHeader';
@@ -8,18 +8,41 @@ import SelectDate from '../components/SelectDate';
 import SelectCondition from "../components/SelectCondition.js"
 import SelectService from '../components/SelectService.js';
 import { useNavigation } from '@react-navigation/native';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 const FilterScreen = () => {
-  const navigation = useNavigation();
-
+    const navigation = useNavigation();
+    const [price, setPrice] = useState({ low: 0, high: 1000 });
+    const [location, setLocation] = useState("Any Location");
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [condition, setCondition] = useState(["Any direction"]);
+    const [selectedServices, setSelectedServices] = useState(["Any Service"]);
     const [activeSections, setActiveSections] = useState([]);
 
+    const filterClinics = async () => {
+        const clinicCollection = collection(db, 'clinics');
+        const clinicSnapshot = await getDocs(clinicCollection);
+        const clinicList = clinicSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        const filteredClinics = clinicList.filter(clinic => {
+            return clinic.initialConsultFee >= price.low && clinic.initialConsultFee <= price.high 
+            && (clinic.city === location || location === "Any Location") 
+            && (clinic.treatments.some(tret => condition.includes(tret)) || condition.includes("Any direction"))
+            && (clinic.services.some(service => selectedServices.includes(service)) || selectedServices.includes("Any Service"))
+            //&& (!clinic.openingHours.hours[selectedDate.getDay()].closed || selectedDate === null);
+        });
+        navigation.navigate("Search", { results: filteredClinics });
+    };
+
     const sections = [
-        { title: 'Price', content: <SelectPrice /> },
-        { title: 'Location', content: <SelectLocation /> },
-        { title: 'Date', content: <SelectDate /> },
-        { title: 'Condition', content: <SelectCondition />  },
-        { title: 'Services', content: <SelectService />  },
+        { title: 'Price', content: <SelectPrice price={price} setPrice={setPrice} /> },
+        { title: 'Location', content: <SelectLocation location={location} setLocation={setLocation} /> },
+        { title: 'Date', content: <SelectDate selectedDate={selectedDate} setSelectedDate={setSelectedDate} /> },
+        { title: 'Condition', content: <SelectCondition activeSection={condition} setActiveSection={setCondition} />  },
+        { title: 'Services', content: <SelectService selectedServices={selectedServices} setSelectedServices={setSelectedServices} />  },
     ];
 
     const renderSectionTitle = (section) => {
@@ -68,7 +91,7 @@ const FilterScreen = () => {
         </View>
         <View style = {styles.buttoncontainer}>
               <Pressable onPress={() => navigation.navigate("Filter")} style = {styles.leftbutton}><Text style = {styles.leftbtnletter}>Clear All</Text></Pressable>
-              <Pressable onPress={() => navigation.navigate("Search")} style = {styles.rightbutton}><Text style = {styles.rightbtnletter}>Show Results</Text></Pressable>
+              <Pressable onPress={() => filterClinics()} style = {styles.rightbutton}><Text style = {styles.rightbtnletter}>Show Results</Text></Pressable>
         </View>
       </>
         

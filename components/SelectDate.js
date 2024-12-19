@@ -4,9 +4,18 @@ import { Calendar } from 'react-native-calendars';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
-const ToggleSwitch = () => {
+const SelectDate = ({selectedDate, setSelectedDate}) => {
     const [isDate, setIsDate] = useState(true); // true for Dates, false for Months
     const [selectedMonth, setSelectedMonth] = useState(new Date());
+
+    const handleDayPress = (day) => {
+        const pressedDate = new Date(day.dateString);
+        if (selectedDate && pressedDate.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0]) {
+            setSelectedDate(null); // Unselect if the same date is pressed
+        } else {
+            setSelectedDate(pressedDate); // Select the new date
+        }
+    };
 
     const pressDate = () => {
         if(!isDate) setIsDate(true);
@@ -55,24 +64,44 @@ const ToggleSwitch = () => {
             </View>
                 {isDate ? (
                     <Calendar
-                        // Use the currently selected month
                         current={selectedMonth.toISOString().split('T')[0]}
-                        //onDayPress={(day) => console.log('Selected day', day)}
+                        onDayPress={handleDayPress}
                         monthFormat={'yyyy MM'}
                         hideArrows={false}
                         enableSwipeMonths={true}
+                        markedDates={
+                            selectedDate ? {
+                                [selectedDate.toISOString().split('T')[0]]: {
+                                    selected: true,
+                                    selectedColor: '#E0B700', // Example color for selected date
+                                    selectedTextColor: '#FFFFFF', // Example text color for selected date
+                                },
+                            } : {}
+                        }
                     />
                 ) : (
-                    <FlatList
-                        data={renderMonthList()}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity style={styles.monthItem} onPress={() => handleMonthSelect(item.key)}>
-                                <Text style={styles.monthText}>{`${item.month} ${item.year}`}</Text>
-                            </TouchableOpacity>
-                        )}
-                        keyExtractor={item => item.key.toString()}
-                        numColumns={2} // Show two columns
-                    />
+                    <View style={styles.monthListContainer}>
+                        {renderMonthList().reduce((rows, item, index) => {
+                            if (index % 2 === 0) {
+                                rows.push([]);
+                            }
+                            rows[rows.length - 1].push(item);
+                            return rows;
+                        }, []).map((row, rowIndex) => (
+                            <View key={rowIndex} style={styles.row}>
+                                {row.map(item => (
+                                    <TouchableOpacity 
+                                        key={item.key.toString()} 
+                                        style={styles.monthItem} 
+                                        onPress={() => handleMonthSelect(item.key)}
+                                    >
+                                        <Text style={styles.monthText}>{`${item.month}`}</Text>
+                                        <Text style={styles.yearText}>{`${item.year}`}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        ))}
+                    </View>
                 )}
         </View>
     );
@@ -122,7 +151,17 @@ const styles = StyleSheet.create({
     },
     monthText: {
         fontSize: 16,
+        fontWeight: "500"
+    },
+    yearText: {
+        fontSize: 14,
+        fontWeight: "500",
+        color: "#808080"
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 });
 
-export default ToggleSwitch;
+export default SelectDate;

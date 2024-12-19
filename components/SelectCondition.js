@@ -4,9 +4,8 @@ import { CheckBox } from "@rneui/base";
 
 
 
-const SelectCondition = () =>{
-    
-    const [selectedConditions, setSelectedConditions] = useState([0]);
+const SelectCondition = ({activeSection, setActiveSection}) =>{
+
     const conditions = [
         'Any direction',
         'Chronic Pain',
@@ -14,38 +13,40 @@ const SelectCondition = () =>{
         'Neuropathic pain',
         'Post-traumatic stress disorder',
         'Cancer related symptoms',
-        'Any direction',
-        'Chronic Pain',
-        'Multiple Sclerosis',
-        'Neuropathic pain',
-        'Post-traumatic stress disorder',
-        'Cancer related symptoms',
-        'Consultation rooms',
-        'Medical evaluation',
-        'Education services',
-        'Cannabis prescriptions',
-        'Dispensary services',
-        'Telemedicine services',
+        "Irritable bowel syndrome (IBS)",
+        "Endometriosis",
+        "Menstrual Cramps",
+        "Migraine",
+        "Fibromyalgia",
+        "Chronic Fatigue Syndrome",
+        "Arthritis",
     ];
 
-    const toggleCondition = (index) => {
-        setSelectedConditions((prev) =>
-          prev.includes(index) ? prev.filter((s) => s !== index) : [...prev, index]
-        );
-    };
+    const toggleCondition = (condition) => {
+        if(condition === 'Any direction'){
+            setActiveSection(["Any direction"]);
+        }else{
+            setActiveSection((prev) => prev.filter((s) => s !== 'Any direction'));
+            setActiveSection((prev) =>
+                prev.includes(condition) ? prev.filter((s) => s !== condition) : [...prev, condition]
+            );
+        }
+      };
 
     return(
         <View>
             {conditions.map((condition, index) => (
-            <Pressable key={index} style={styles.checkboxContainer} onPress={() => toggleCondition(index)}>
-                <Text style={{fontSize:16, flexGrow:1}}>{condition}</Text>
+            <Pressable key={index} style={styles.checkboxContainer} onPress={() => toggleCondition(condition)}>
+                <Text style={styles.checkboxLabel}>{condition}</Text>
                 <CheckBox
-                containerStyle = {{padding:0, margin:0, right:0}}
-                checked={selectedConditions.includes(index)}
-                checkedColor="red"
-                uncheckedColor='#DEBA5C'
-                size = {24}
-                iconRight
+                    containerStyle = {{padding:0, margin:0, right:0}}
+                    checked = {activeSection.includes(condition)}
+                    checkedColor="#DEBA5C"
+                    uncheckedColor='#DEBA5C'
+                    iconType="material-community"
+                    checkedIcon="checkbox-marked"
+                    uncheckedIcon="checkbox-blank-outline"
+                    size = {24}
                 />
             </Pressable>
             ))}
@@ -57,12 +58,12 @@ const styles = StyleSheet.create({
     checkboxContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        height: 30,
-        marginTop: 16,
+        height: 46,
+        padding: 8,
       },
       checkboxLabel: {
         fontSize: 16,
-        color: "red",
+        flexGrow: 1,
       },
 })
 
