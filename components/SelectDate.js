@@ -57,7 +57,7 @@ const ToggleSwitch = () => {
                     <Calendar
                         // Use the currently selected month
                         current={selectedMonth.toISOString().split('T')[0]}
-                        onDayPress={(day) => console.log('Selected day', day)}
+                        //onDayPress={(day) => console.log('Selected day', day)}
                         monthFormat={'yyyy MM'}
                         hideArrows={false}
                         enableSwipeMonths={true}

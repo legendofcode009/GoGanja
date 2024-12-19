@@ -53,7 +53,7 @@ const ClinicScreen = () => {
                                         style = {styles.image} 
                                         source = {item}
                                         resizeMode="cover" 
-                                        onLoad={() => console.log('Image loaded')}
+                                        //onLoad={() => console.log('Image loaded')}
                                         onError={() => console.log('Error loading image')}
                                     />
                                 </View>

@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
 import { Icon } from '@rneui/base';
 
 
 
-const ClinicCard = () => {
+const ClinicCard = ({clinic}) => {
   const navigation = useNavigation();
   const [like, setLike] = useState(false);
   const toggleLike = () => {
     setLike(!like);
   }
+  //console.log("Rendering ClinicCard with clinic:", clinic.address);
   return (
     <View style={styles.card}>
       <View style = {{borderRadius: 20, width: "100%", height: 254, borderWidth: 0, borderColor:"#3333ff", overflow: "hidden"}}>
         <Pressable onPress = {() => {navigation.navigate("Clinic")}}>
           <Image
-            source={require('../assets/Clinic.jpg')}
+            source={{ uri: clinic.featuredImage }}
             style={styles.image}
             // onPress = {() => {navigation.navigete("Clinic")}}
           />
@@ -29,11 +30,11 @@ const ClinicCard = () => {
         </View>
       </View>
       <View style = {{flexDirection : "row", marginTop: 8, }}>
-        <Text style={styles.clinicName}>Name clinic</Text>
+        <Text style={styles.clinicName}>{clinic.name}</Text>
         <Text style={styles.rating}>⭐ 5.0</Text>
       </View>
-      <Text style={styles.location}>Location</Text>
-      <Text style={styles.consultFee}>Consult fee</Text>
+      <Text style={styles.location}>{clinic.address}</Text>
+      <Text style={styles.consultFee}>{clinic.initialConsultFee}</Text>
     </View>
   );
 };

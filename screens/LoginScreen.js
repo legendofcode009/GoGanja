@@ -39,9 +39,9 @@ const LoginScreen = () => {
 
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            console.log("user credential", userCredential);
+            //console.log("user credential", userCredential);
             const user = userCredential.user;
-            console.log("user details", user);
+            //console.log("user details", user);
             navigation.navigate("Main"); // Navigate to Main after successful login
         })
         .catch((error) => {

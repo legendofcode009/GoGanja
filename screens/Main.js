@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import Header from '../components/Header';
-import HomeScreen from './HomeScreen';
-import ClinicScreen from './ClinicScreen';
+import HomeClinic from './HomeClinic';
 import Tour from './Tour';
 import Hotel from './Hotel';
 
@@ -16,7 +15,7 @@ const Main = () => {
             case 1:
                 return <Tour />;
             case 2:
-                return <HomeScreen />;
+                return <HomeClinic />;
             default:
                 return null;
         }

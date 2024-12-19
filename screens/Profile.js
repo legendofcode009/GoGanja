@@ -1,16 +1,58 @@
-import { Pressable, Text, View, StyleSheet, Image, TextInput, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import { Pressable, Text, View, StyleSheet, Image, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
+import * as ImagePicker from 'expo-image-picker';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 
 const Profile = () => {
     const [email,setEmail] = useState("");
+    const [name, setName] = useState("");
     const [password,setPassword] = useState("");
     const [phoneNumber,setPhoneNumber] = useState("");
+    const [imageUri, setImageUri] = useState(require("../assets/download.png"));
     const navigation = useNavigation();
-    const [isDate, setIsDate] = useState(true); // true for Dates, false for Months
+    const [isEnglish, setIsEnglish] = useState(true); // true for Dates, false for Months
+    const [loading, setLoading] = useState(true); // Loading state
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const user = auth.currentUser;
+                if (user) {
+                    setEmail(user.email);
+                    await fetchUserData(user.uid);
+                }
+            } catch (error) {
+                console.error("Error fetching user data: ", error);
+            } finally {
+                setLoading(false); // Ensure loading is set to false after data fetching
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const fetchUserData = async (uid) => {
+        const db = getFirestore();
+        const userDoc = doc(db, "users", uid);
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.profileImage) {
+                setImageUri({ uri: data.profileImage });
+            }                   
+            if (data.name) {
+                setName(data.name);
+            }
+            if (data.phoneNumber) {
+                setPhoneNumber(data.phoneNumber);
+            }
+        }
+    };
 
     const handleLogout = () => {
         signOut(auth)
@@ -23,15 +65,62 @@ const Profile = () => {
             });
     };
 
-    const pressDate = () => {
-        if(!isDate) setIsDate(true);
+    const pressEnglish = () => {
+        if(!isEnglish) setIsEnglish(true);
     };
 
-    const pressMonth = () => {
-        if(isDate) setIsDate(false);
+    const pressThai = () => {
+        if(isEnglish) setIsEnglish(false);
     }; 
 
+    const pickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('Sorry, we need camera roll permissions to make this work!');
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const uri = result.uri;
+            setImageUri({ uri });
+
+            // Upload image to Firebase Storage
+            const storage = getStorage();
+            const storageRef = ref(storage, `profileImages/${auth.currentUser.uid}`);
+            const response = await fetch(uri);
+            const blob = await response.blob();
+
+            uploadBytes(storageRef, blob).then(async (snapshot) => {
+                console.log('Uploaded a blob or file!');
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                // Update Firestore with the new image URL
+                const db = getFirestore();
+                const userDoc = doc(db, "users", auth.currentUser.uid);
+                await updateDoc(userDoc, {
+                    profileImage: downloadURL
+                });
+
+                console.log('Profile image updated in Firestore');
+            }).catch((error) => {
+                console.error("Error uploading image: ", error);
+            });
+        }
+    };
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#314435" style={styles.loadingIndicator} />;
+    }
+
+
     return(
+        // loading ? <ActivityIndicator size="large" color="#314435" style={styles.loadingIndicator} /> :
         <>
             <View style = {styles.headerContainer}>
                 <Ionicons name = "notifications-outline" style = {styles.headerIconleft} size = {24} />
@@ -39,8 +128,10 @@ const Profile = () => {
                 <Ionicons name = "log-out-outline" style = {styles.headerIcon} size = {24} onPress={handleLogout} />
             </View>
             <View style = {styles.container}>
-                <View style = {styles.imageContainer}><Image style = {styles.image} source = {require("../assets/avatar.jpg")} /></View>
-                <Text style = {styles.headText}>Name Name</Text>
+                <Pressable style = {styles.imageContainer} onPress={pickImage}>
+                    <Image style = {styles.image} source = {imageUri} />
+                </Pressable>
+                <Text style = {styles.headText}>{name}</Text>
                 <Text style = {styles.editText}>Edit Profile</Text>
                 <View style = {styles.rowContainer}>
                     <Text style = {styles.subheadText}>Personal Information</Text>
@@ -75,18 +166,18 @@ const Profile = () => {
                 </View>
                 <View style={styles.switchContainer}>
                     <TouchableOpacity 
-                        style={[styles.switch, isDate ? styles.active : styles.inactive]} 
-                        onPress={pressDate}
+                        style={[styles.switch, isEnglish ? styles.active : styles.inactive]} 
+                        onPress={pressEnglish}
                     >
-                        <Text style={[styles.switchText, isDate ? styles.activeSwitchText : styles.inactiveSwitchText]}>
+                        <Text style={[styles.switchText, isEnglish ? styles.activeSwitchText : styles.inactiveSwitchText]}>
                             English
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                        style={[styles.switch, !isDate ? styles.active : styles.inactive]} 
-                        onPress={pressMonth}
+                        style={[styles.switch, !isEnglish ? styles.active : styles.inactive]} 
+                        onPress={pressThai}
                     >
-                        <Text style={[styles.switchText, !isDate ? styles.activeSwitchText : styles.inactiveSwitchText]}>
+                        <Text style={[styles.switchText, !isEnglish ? styles.activeSwitchText : styles.inactiveSwitchText]}>
                             Thai
                         </Text>
                     </TouchableOpacity>
@@ -117,6 +208,11 @@ const Profile = () => {
 }
 
 const styles = StyleSheet.create({
+    loadingIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     headerContainer: {
         height:100, 
         justifyContent: "flex",

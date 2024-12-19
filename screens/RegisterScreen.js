@@ -50,11 +50,12 @@ const RegisterScreen = () => {
                 return setDoc(doc(db, "users", uid), { 
                     name: name,
                     email: user.email,
-                    phoneNumber: phoneNumber
+                    phoneNumber: phoneNumber,
+                    userType: "User",
                 });
             })
             .then(() => {
-                console.log('User registered successfully');
+                //console.log('User registered successfully');
                 navigation.navigate("Main");
             })
             .catch((error) => {
