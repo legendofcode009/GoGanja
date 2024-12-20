@@ -33,7 +33,11 @@ const ScheduleClinic2 = () => {
                 `Appointment Scheduled`, 
                 `Date: ${selectedDate.toLocaleDateString()}\nTime: ${selectedDate.toLocaleTimeString()}`, 
                 [
-                    {text: "OK", onPress: () => navigation.navigate("ScheduleClinic3", { clinic: clinic, selectedServices: selectedServices, selectedDate: selectedDate, totalPrice: totalPrice })},
+                    {text: "OK", onPress: () => navigation.navigate("ScheduleClinic3", { 
+                        clinic: clinic, 
+                        selectedServices: selectedServices, 
+                        selectedDate: selectedDate.toISOString(), 
+                        totalPrice: totalPrice })},
                     {text: "Cancel", onPress: () => console.log("Cancel Pressed")}
                 ]
         );

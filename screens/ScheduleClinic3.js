@@ -1,8 +1,11 @@
 import React, {useState} from "react";
 import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import LinearGradient from 'react-native-linear-gradient';
 import { Icon, Divider } from '@rneui/themed';
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import { Alert } from "react-native";
+import { auth } from "../firebaseConfig";
 
 const ScheduleClinic3 = () => {
     const navigation = useNavigation();
@@ -14,9 +17,31 @@ const ScheduleClinic3 = () => {
     const route = useRoute();
     const clinic = route.params.clinic;
     const selectedServices = route.params.selectedServices;
-    const selectedDate = route.params.selectedDate;
+    const selectedDate = new Date(route.params.selectedDate);
     const totalPrice = route.params.totalPrice;
 
+    const handleComplete = () => {
+        const bookingRef = doc(db, "clinics_bookings", clinic.id + "_" + selectedDate.getTime());
+        setDoc(bookingRef, {
+            clinicId: clinic.id,
+            clinicName: clinic.name,
+            services: selectedServices,
+            appointmentDate: selectedDate,
+            bookedDate: new Date(),
+            totalPrice: totalPrice,
+            email: email,
+            userId: auth.currentUser.uid,
+            phoneNumber: phoneNumber,
+            status: "pending"
+        })
+        .then(() => {
+            Alert.alert("Success", "Your appointment has been booked!");
+            navigation.navigate("Main");
+        })
+        .catch((error) => {
+            Alert.alert("Error", "Failed to book appointment: " + error.message);
+        });
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -108,13 +133,13 @@ const ScheduleClinic3 = () => {
                         <View style = {styles.bsServiceright}><Image style={styles.payIcon} resizeMode="cover" source={require("../assets/visa.png")} /></View>
                         <View style = {styles.bsServiceleft}><Text style = {styles.bsSubheader}>Credit Card</Text><Text style = {styles.bsSubheader}>**** **** **** 6542</Text></View>
                     </View>
-                    
-                    <View style = {{height: 170,}}></View>
+                    <View style={styles.buttonContainer}>
+                        <Pressable style = {styles.button} onPress={handleComplete}><Text style = {styles.btText}>Complete</Text></Pressable>
+                    </View>
+                    <View style = {{height: 100,}}></View>
                     {/* Repeat service rows as needed */}
                 </ScrollView>
-                <View style={styles.buttonContainer}>
-                    <Pressable style = {styles.button} onPress={() => navigation.navigate("Main")}><Text style = {styles.btText}>Next</Text></Pressable>
-                </View>
+                
             </View>
             <Image style={styles.image} blurRadius={4} resizeMode="cover" source={require("../assets/clinicback.png")} />
         </SafeAreaView>
@@ -185,11 +210,8 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     buttonContainer: {
-        left: 0,
-        right: 0,
         alignItems: 'center',
-        width: "90%", // Adjust width as needed
-        zIndex: 1, // Ensure the button is above other components
+        width: "100%", // Adjust width as needed
     },
     totalButton: {
         height: 48,
@@ -203,7 +225,6 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
     button: {
-        bottom: 60,
         height: 48,
         backgroundColor: "#314435",
         borderRadius: 16,

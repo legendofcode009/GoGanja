@@ -2,22 +2,61 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  FlatList,
   Text,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { collection, getDocs } from "firebase/firestore";
+import { query, where, orderBy } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 import AppointmentCard from "./AppointmentCard.js";
 import RecipeCard from "./RecipeCard.js";
+import { auth } from "../firebaseConfig";
 
 const BookingClinic = () => {
   const navigation = useNavigation();
   const [appointment, setAppointment] = useState(true);
   const [activeDropdownId, setActiveDropdownId] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      setLoading(true); // Start loading
+      try {
+        const authUserId = auth.currentUser.uid; // Replace with actual user ID retrieval logic
+        const bookingsQuery = query(
+          collection(db, "clinics_bookings"),
+          where("userId", "==", authUserId)
+        );
+        const snapshot = await getDocs(bookingsQuery);
+        setBookings(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (error) {
+        console.error("Error fetching bookings: ", error);
+      } finally {
+        setLoading(false); // End loading
+      }
+    };
+    fetchBookings();
+  }, []);
 
   const toggleDropdown = (id) => {
     setActiveDropdownId((prevId) => (prevId === id ? null : id));
   };
+
+  const renderAppointmentItem = ({ item }) => (
+    <AppointmentCard
+      isDropdownOpen={activeDropdownId === item.id}
+      toggleDropdown={() => toggleDropdown(item.id)}
+      appointment={item}
+    />
+  );
+
+  if (loading) {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Loading...</Text></View>;
+  }
 
   return (
     <>
@@ -34,22 +73,23 @@ const BookingClinic = () => {
         </View>
         {
           appointment ?
-            <ScrollView style={{ paddingBottom: 70 }}>
-              <AppointmentCard
-                isDropdownOpen={activeDropdownId === 1}
-                toggleDropdown={() => toggleDropdown(1)}
-              />
-              <AppointmentCard
-                isDropdownOpen={activeDropdownId === 2}
-                toggleDropdown={() => toggleDropdown(2)}
-              />
-            </ScrollView> :
-            <ScrollView style={{ paddingBottom: 70 }}>
-              <Pressable style={styles.newPress} onPress={() => navigation.navigate("OrderRecipe")}><Text style={styles.newText}>Order a recipe</Text></Pressable>
-              <RecipeCard />
-              <RecipeCard />
-              <RecipeCard />
-            </ScrollView>
+          <FlatList
+            data={bookings}
+            renderItem={renderAppointmentItem}
+            keyExtractor={item => item.id}
+            contentContainerStyle={{ paddingBottom: 70 }}
+          /> :
+          <FlatList
+              data={[1, 2, 3]} // Dummy data for recipes
+              renderItem={() => (
+                <RecipeCard />
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              ListHeaderComponent={() => (
+                <Pressable style={styles.newPress} onPress={() => navigation.navigate("OrderRecipe")}><Text style={styles.newText}>Order a recipe</Text></Pressable>
+              )}
+              contentContainerStyle={{ paddingBottom: 70 }}
+            />  
         }
 
       </View>

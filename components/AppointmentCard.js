@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Entypo, Ionicons } from "@expo/vector-icons"
 import { Divider, Tooltip } from '@rneui/themed';
+import { db } from '../firebaseConfig';
+import { doc, getDoc } from 'firebase/firestore';
 
 
 
-const AppointmentCard = ({ isDropdownOpen, toggleDropdown }) => {
+const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment }) => {
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
 
@@ -24,22 +26,44 @@ const AppointmentCard = ({ isDropdownOpen, toggleDropdown }) => {
     }
     toggleDropdown(false);
   };
+  const [clinic, setClinic] = useState(null);
+
+  useEffect(() => {
+    const fetchClinicData = async () => {
+      try {
+        const clinicDoc = await getDoc(doc(db, 'clinics', appointment.clinicId));
+        if (clinicDoc.exists()) {
+          setClinic(clinicDoc.data());
+        }
+      } catch (error) {
+        console.error("Error fetching clinic data:", error);
+      }
+    };
+
+    if (appointment?.clinicId) {
+      console.log(appointment);
+      fetchClinicData();
+    }
+  }, [appointment]);
 
   return (
     <View style={styles.card}>
-      <Pressable style={styles.headContainer} onPress={() => navigation.navigate("AppointmentDetail")}><Text style={styles.headText}>Name Procedure</Text><Text style={styles.timeText}>20 May 2024 - 12:00</Text></Pressable>
+      <Pressable style={styles.headContainer} onPress={() => navigation.navigate("AppointmentDetail", { appointmentId: appointment.id })}>
+        <Text style={styles.headText}>Name Procedure</Text>
+        <Text style={styles.timeText}>20 May 2024 - 12:00</Text>
+      </Pressable>
       <View style={styles.rowContainer}>
         <View style={styles.imageContainer}>
           <Image
-            source={require('../assets/Clinic.jpg')}
+            source={clinic?.featuredImage ? { uri: clinic.featuredImage } : require('../assets/Clinic.jpg')}
             style={styles.image}
           // onPress = {() => {navigation.navigete("Clinic")}}
           />
         </View>
         <View style={styles.contentContainer}>
-          <Text style={styles.bgText}>Name Clinic</Text>
-          <Text style={styles.smText}>20 May 2024 12:00</Text>
-          <Text style={styles.smText}>Price</Text>
+          <Text style={styles.bgText}>{clinic?.name}</Text>
+          <Text style={styles.smText}>{appointment?.id ? new Date(appointment.appointmentDate.seconds * 1000).toLocaleString() : ''}</Text>
+          <Text style={styles.smText}>{appointment?.totalPrice}</Text>
         </View>
         <TouchableOpacity
           style={styles.threeDot}
