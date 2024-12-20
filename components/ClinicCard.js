@@ -15,11 +15,10 @@ const ClinicCard = ({clinic}) => {
   return (
     <View style={styles.card}>
       <View style = {{borderRadius: 20, width: "100%", height: 254, borderWidth: 0, borderColor:"#3333ff", overflow: "hidden"}}>
-        <Pressable onPress = {() => {navigation.navigate("Clinic")}}>
+        <Pressable onPress = {() => {navigation.navigate("Clinic", {clinic: clinic})}}>
           <Image
             source={{ uri: clinic.featuredImage }}
             style={styles.image}
-            // onPress = {() => {navigation.navigete("Clinic")}}
           />
         </Pressable>
         <View style = {styles.favoriteButton}>

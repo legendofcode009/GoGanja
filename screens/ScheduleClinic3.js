@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import LinearGradient from 'react-native-linear-gradient';
 import { Icon, Divider } from '@rneui/themed';
 
@@ -11,15 +11,12 @@ const ScheduleClinic3 = () => {
     const [email,setEmail] = useState();
     const [password,setPassword] = useState();
     const [phoneNumber,setPhoneNumber] = useState();
+    const route = useRoute();
+    const clinic = route.params.clinic;
+    const selectedServices = route.params.selectedServices;
+    const selectedDate = route.params.selectedDate;
+    const totalPrice = route.params.totalPrice;
 
-    services = [
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-    ]
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -29,7 +26,18 @@ const ScheduleClinic3 = () => {
                 <ScrollView style={styles.bsServicecontainer}>
                     <View style = {styles.bsServicerow}>
                         <Text style={styles.bsSubheader}>Date</Text>
-                        <Text style = {styles.dataTimeText}>20 May 2024 - 12:00</Text>
+                        <Text style={styles.dataTimeText}>
+                            {selectedDate.toLocaleDateString('en-US', {
+                                year: 'numeric', // "2023"
+                                month: 'short', // "October"
+                                day: 'numeric' // "23"
+                            })}
+                             - {selectedDate.toLocaleTimeString('en-US', {
+                                hour: 'numeric',
+                                minute: 'numeric',
+                                hour12: true
+                            })}
+                        </Text>
                     </View>
                     <View style={[styles.bsServicerow, { marginBottom: 5 }]}>
                         <View style={styles.bsServiceleft}>
@@ -41,14 +49,14 @@ const ScheduleClinic3 = () => {
                     </View>
                     <Divider orientation="vertical" />
                     {
-                        services.map((item, index) => (
+                        selectedServices.map((item, index) => (
                             <View key = {index}>
-                                <View key = {index} style={[styles.bsServicerow, ]}>
+                                <View style={[styles.bsServicerow, ]}>
                                     <View style={styles.bsServiceleft}>
-                                        <Text style={styles.bsText}>{item.title} :</Text>
+                                        <Text style={styles.bsText}>{item} :</Text>
                                     </View>
                                     <View style={styles.bsServiceright}>
-                                        <Text style={styles.bsPricetext}>${item.price}</Text>
+                                        <Text style={styles.bsPricetext}>$50</Text>
                                     </View>
                                 </View>
                                 <Divider orientation="vertical" />
@@ -57,9 +65,9 @@ const ScheduleClinic3 = () => {
                         ))
                     }
 
-                    <Pressable style = {styles.totalButton} onPress={() => navigation.navigate("ScheduleClinic2")}>
-                                        <Text style={styles.bsText}>Total Price :</Text>
-                                        <Text style={styles.bsPricetext}>$70</Text>
+                    <Pressable style = {styles.totalButton} onPress={() => navigation.navigate("ScheduleClinic", {clinic: clinic, selectedServices: selectedServices})}>
+                        <Text style={styles.bsText}>Total Price :</Text>
+                        <Text style={styles.bsPricetext}>${totalPrice}</Text>
                     </Pressable>
                     
                     <View style ={{width: "100%", alignItems: "center"}}>
@@ -105,7 +113,7 @@ const ScheduleClinic3 = () => {
                     {/* Repeat service rows as needed */}
                 </ScrollView>
                 <View style={styles.buttonContainer}>
-                    <Pressable style = {styles.button} onPress={() => navigation.navigate("ScheduleClinic2")}><Text style = {styles.btText}>Next</Text></Pressable>
+                    <Pressable style = {styles.button} onPress={() => navigation.navigate("Main")}><Text style = {styles.btText}>Next</Text></Pressable>
                 </View>
             </View>
             <Image style={styles.image} blurRadius={4} resizeMode="cover" source={require("../assets/clinicback.png")} />

@@ -74,43 +74,68 @@ const Profile = () => {
     }; 
 
     const pickImage = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            alert('Sorry, we need camera roll permissions to make this work!');
-            return;
-        }
+        try {
+            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+                return;
+            }
 
-        let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            const uri = result.uri;
-            setImageUri({ uri });
-
-            // Upload image to Firebase Storage
-            const storage = getStorage();
-            const storageRef = ref(storage, `profileImages/${auth.currentUser.uid}`);
-            const response = await fetch(uri);
-            const blob = await response.blob();
-
-            uploadBytes(storageRef, blob).then(async (snapshot) => {
-                console.log('Uploaded a blob or file!');
-                const downloadURL = await getDownloadURL(snapshot.ref);
-
-                // Update Firestore with the new image URL
-                const db = getFirestore();
-                const userDoc = doc(db, "users", auth.currentUser.uid);
-                await updateDoc(userDoc, {
-                    profileImage: downloadURL
-                });
-
-                console.log('Profile image updated in Firestore');
-            }).catch((error) => {
-                console.error("Error uploading image: ", error);
+            let result = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
             });
+
+            if (!result.canceled) {
+                const uri = result.uri;
+                setImageUri({ uri });
+
+                // Check network connectivity
+                const isConnected = await checkNetworkConnectivity();
+                if (!isConnected) {
+                    alert('No internet connection. Please try again later.');
+                    return;
+                }
+
+                // Upload image to Firebase Storage
+                const storage = getStorage();
+                const storageRef = ref(storage, `profileImages/${auth.currentUser.uid}`);
+                
+                try {
+                    const response = await fetch(uri);
+                    const blob = await response.blob();
+
+                    await uploadBytes(storageRef, blob);
+                    console.log('Uploaded a blob or file!');
+                    const downloadURL = await getDownloadURL(storageRef);
+
+                    // Update Firestore with the new image URL
+                    const db = getFirestore();
+                    const userDoc = doc(db, "users", auth.currentUser.uid);
+                    await updateDoc(userDoc, {
+                        profileImage: downloadURL
+                    });
+
+                    console.log('Profile image updated in Firestore');
+                } catch (error) {
+                    console.error("Error during fetch or upload: ", error);
+                    alert('Failed to upload image. Please try again.');
+                }
+            }
+        } catch (error) {
+            console.error("Error picking image: ", error);
+            alert(`Failed to pick image. Error: ${error.message}`);
+        }
+    };
+
+    // Helper function to check network connectivity
+    const checkNetworkConnectivity = async () => {
+        try {
+            const response = await fetch('https://www.google.com', { method: 'HEAD' });
+            return response.ok;
+        } catch (error) {
+            return false;
         }
     };
 

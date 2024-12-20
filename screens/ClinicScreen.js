@@ -1,12 +1,10 @@
-
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Carousel from 'react-native-reanimated-carousel';
-import React, { useCallback, useRef, useMemo } from 'react';
+import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, Text,Button, Dimensions, Pressable } from "react-native";
 import { Icon, Divider  } from '@rneui/themed';
 import ReviewCard from '../components/ReviewCard';
-import { useNavigation } from "@react-navigation/native";
-import ScheduleAppointment from './ScheduleClinic';
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 
 
@@ -14,18 +12,25 @@ const ClinicScreen = () => {
     const Navigation = useNavigation();
     const rating = 50;
     const ratingimage = require('../assets/star.png');
+    const route = useRoute();
+    const clinic = route.params?.clinic;
     const width = Dimensions.get('window').width;
-    const images = [
-        require('../assets/Clinic.jpg'),
-        require('../assets/download.jpg'),
-        require('../assets/images.jpg'),
-      ];
+    const [images, setImages] = useState([]);
+    const [showAllServices, setShowAllServices] = useState(false);
+    const maxVisibleServices = 4;
 
+    useEffect(() => {
+        const fetchImages = async () => {
+            if (clinic && Array.isArray(clinic.additionalImages)) {
+                console.log(clinic);
+                setImages(clinic.additionalImages);
+            } else {
+                console.log('No additional images found or clinic is undefined');
+            }
+        };
+        fetchImages();
+    }, [clinic]);
 
-      const sheetRef = useRef(null);
-
-      // Define the snap points
-      const snapPoints = useMemo(() => ['50%', '90%'], []);
 
 
     return (
@@ -46,14 +51,10 @@ const ClinicScreen = () => {
                                         justifyContent: 'center',
                                     }}
                                 >
-                                    {/* <Text style={{ textAlign: 'center', fontSize: 30 }}>
-                                        {item.title}
-                                    </Text> */}
                                     <Image 
-                                        style = {styles.image} 
-                                        source = {item}
+                                        style={styles.image} 
+                                        source={{ uri: item }} // Use item as the uri
                                         resizeMode="cover" 
-                                        //onLoad={() => console.log('Image loaded')}
                                         onError={() => console.log('Error loading image')}
                                     />
                                 </View>
@@ -63,8 +64,8 @@ const ClinicScreen = () => {
                         <View style={styles.loveicon}><Icon name="hearto" type="antdesign" /></View>
                     </View>
                     <View style={{ paddingTop: 24, paddingHorizontal: 20, }}>
-                        <Text style={styles.name}>Name Clinic</Text>
-                        <Text style={styles.maintext}>Location</Text>
+                        <Text style={styles.name}>{clinic.name}</Text>
+                        <Text style={styles.maintext}>{clinic.address}</Text>
                         <View style={styles.ratecontainer} >
                             <View style={styles.ratesub}>
                                 <Text style={styles.ratingtext}>{rating}</Text>
@@ -78,9 +79,9 @@ const ClinicScreen = () => {
                             </View>
                         </View>
                         <View >
-                            <Text style={styles.header}>Welcome to [Clinic Name]!</Text>
+                            <Text style={styles.header}>Welcome to {clinic.name}!</Text>
                             <Text style={[styles.smalltext, { marginTop: 8, marginBottom: 16 }]}>We specialize in cannabis treatment and strive to provide the best medical services to our patients.</Text>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>At the [Clinic Name] clinic, we believe in the power of cannabis as a healing agent. Our doctors and specialists have many years of experience in this field.</Text></View>
+                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>At the {clinic.name } clinic, we believe in the power of cannabis as a healing agent. Our doctors and specialists have many years of experience in this field.</Text></View>
                             <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>We are licensed under regulation [name of regulator] and adhere to all safety standards.</Text></View>
                             <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>The clinic was founded in [year] and since then has successfully helped thousands of patients.</Text></View>
                         </View>
@@ -88,21 +89,33 @@ const ClinicScreen = () => {
                         <View>
                             <Text style={styles.header}>Clinic Services</Text>
                             <Text style={[styles.smalltext, { marginTop: 8, marginBottom: 8 }]}>Our services include, but are not limited to:</Text>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Medical consultations with the use of cannabis.
+                            {clinic.services.map((service, index) => (
+                                <View style={styles.bullet} key={index}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>{service}</Text></View>
+                            ))}
+                            {/* <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Medical consultations with the use of cannabis.
                             </Text></View>
                             <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Selection and updating of recipes.
                             </Text></View>
                             <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Physiotherapy and massage.</Text></View>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Psychological support and therapy.</Text></View>
+                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Psychological support and therapy.</Text></View> */}
                         </View>
                         <Divider style={styles.divider} orientation="horizontal" />
                         <View>
                             <Text style={styles.header}>Price List</Text>
-                            <View style={styles.pricelist} ><Text style={styles.maintext}>Consultant with a doctor:</Text><Text style={styles.pricetext}>$50</Text></View>
-                            <View style={styles.pricelist} ><Text style={styles.maintext}>Prescription renewal:</Text><Text style={styles.pricetext}>$20</Text></View>
-                            <View style={styles.pricelist} ><Text style={styles.maintext}>Physiotherapy:</Text><Text style={styles.pricetext}> $30/session</Text></View>
-                            <View style={styles.pricelist} ><Text style={styles.maintext}>Massage: </Text><Text style={styles.pricetext}>$40/session</Text></View>
-                            <View style={styles.morecontainer}><Text style = {styles.moretext}>View More</Text></View>
+                            {clinic.services.slice(0, showAllServices ? clinic.services.length : maxVisibleServices).map((service, index) => (
+                                <View style={styles.pricelist} key={index}>
+                                    <Text style={styles.maintext}>{service}</Text>
+                                    <Text style={styles.pricetext}>$50</Text>
+                                </View>
+                            ))}
+                            {!showAllServices ?
+                                <Pressable onPress={() => setShowAllServices(true)} style={styles.morecontainer}>
+                                    <Text style={styles.moretext}>View More</Text>
+                                </Pressable>:
+                                <Pressable onPress={() => setShowAllServices(false)} style={styles.morecontainer}>
+                                    <Text style={styles.moretext}>View Less</Text>
+                                </Pressable>
+                            }
                         </View> 
 
                         <Divider style={styles.divider} orientation="horizontal" />
@@ -146,29 +159,9 @@ const ClinicScreen = () => {
 
                 </ScrollView>
                 <View  style={styles.buttoncontainer}>
-                    <Pressable style={styles.button} onPress={() => Navigation.navigate("ScheduleClinic")} ><Text style={{color: "#fafafa", fontSize:16,}}>Appointment</Text></Pressable>
-                    {/* <Button style = {styles.button} title="Appoinment" onPress={() => {}} />
-                        <BottomSheet
-                        ref={sheetRef}
-                        snapPoints={snapPoints}
-                        index={-1}
-                    >
-                        <BottomSheetView>
-                        <Text>Awesome 🔥</Text>
-                        </BottomSheetView>
-                    </BottomSheet> */}
+                    <Pressable style={styles.button} onPress={() => Navigation.navigate("ScheduleClinic", {clinic: clinic}) } ><Text style={{color: "#fafafa", fontSize:16,}}>Appointment</Text></Pressable>
                 </View >
             </View>
-            {/* <BottomSheet
-                ref={sheetRef}
-                snapPoints={snapPoints}
-                index={-1} // Start closed
-                enablePanDownToClose={true} // Allow swipe down to close
-            >
-                <BottomSheetView style={{flex: 1, justifyContent:"center", alignItems: "center"}}>
-                    <ScheduleAppointment />
-                </BottomSheetView>
-            </BottomSheet> */}
         </GestureHandlerRootView>                    
     )
 }
@@ -218,6 +211,8 @@ const styles = StyleSheet.create({
         maxWidth: 500,
         flexDirection: "row",
         justifyContent: "space-around",
+        backgroundColor: "#fafafa",
+        elevation: 0.8,
 
         shadowColor: '#000',
         shadowOffset: { width: 2, height: 1 },

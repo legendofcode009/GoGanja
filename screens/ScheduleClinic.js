@@ -1,32 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {Ionicons, ionicons} from "@expo/vector-icons";
 import { Icon, Divider } from '@rneui/themed';
 
 const ScheduleClinic = () => {
     const navigation = useNavigation();
     const { width, height } = Dimensions.get("window");
+    const route = useRoute();
+    const clinic = route.params.clinic;
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedServices, setSelectedServices] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
 
-    services = [
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-    ]
+    const handleAddService = (service) => {
+        if (selectedServices.includes(service)) {
+            setSelectedServices(selectedServices.filter(item => item !== service));
+            setTotalPrice(totalPrice - 50);
+        } else {
+            setSelectedServices([...selectedServices, service]);
+            setTotalPrice(totalPrice + 50);
+        }
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -46,6 +41,8 @@ const ScheduleClinic = () => {
                             paddingHorizontal: 16,
                             height: 48,
                         }}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
                     />
                 </View>
                 <ScrollView style={styles.bsServicecontainer}>
@@ -60,16 +57,18 @@ const ScheduleClinic = () => {
                     </View>
                     <Divider orientation="vertical" />
                     {
-                        services.map((item, index) => (
+                        clinic.services.filter(item => item.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
                             <View key = {index}>
                                 <View style={[styles.bsServicerow, ]}>
                                     <View style={styles.bsServicefirst}>
-                                        <Text style={styles.bsText}>{item.title} :</Text>
+                                        <Text style={styles.bsText}> {item} :</Text>
                                     </View>
                                     <View style={styles.bsServicesecond}>
-                                        <Text style={styles.bsPricetext}>${item.price}</Text>
+                                        <Text style={styles.bsPricetext}>$50</Text>
                                     </View>
-                                    <View style = {styles.bsServicethird}><Ionicons size = {32} name = {"add-circle-outline"} color = {"#DEBA5C"} /></View>
+                                    {!selectedServices.includes(item) ? 
+                                    <View style = {styles.bsServicethird}><Ionicons size = {32} name = {"add-circle-outline"} color = {"#DEBA5C"} onPress= {() => handleAddService(item)} /></View> : 
+                                    <View style = {styles.bsServicethird}><Ionicons size = {32} name = {"close-circle-outline"} color = {"#314435"} onPress= {() => handleAddService(item)} /></View>}
                                 </View>
                                 <Divider orientation="vertical" />
                             </View>
@@ -81,7 +80,7 @@ const ScheduleClinic = () => {
                     {/* Repeat service rows as needed */}
                 </ScrollView>
                 <View style={styles.buttonContainer}>
-                    <Pressable style = {styles.button} onPress={() => navigation.navigate("ScheduleClinic2")}><Text style = {styles.btText}>Next</Text></Pressable>
+                    <Pressable style = {styles.button} onPress={() => navigation.navigate("ScheduleClinic2", {clinic: clinic, selectedServices: selectedServices, totalPrice: totalPrice})}><Text style = {styles.btText}>Next</Text></Pressable>
                 </View>
             </View>
             <Image style={styles.image} blurRadius={4} resizeMode="cover" source={require("../assets/clinicback.png")} />
