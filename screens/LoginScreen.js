@@ -19,6 +19,20 @@ const LoginScreen = () => {
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
+  
+  useEffect(() => {
+    try {
+      const unsubscribe = auth.onAuthStateChanged((authUser) => {
+        if (authUser) {
+          navigation.navigate("Main");
+        }
+      });
+      return unsubscribe;
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
   const login = () => {
     if (!email || !password) {
         Alert.alert(
@@ -70,18 +84,6 @@ const LoginScreen = () => {
         });
   };
 
-  useEffect(() => {
-    try {
-      const unsubscribe = auth.onAuthStateChanged((authUser) => {
-        if (authUser) {
-          navigation.navigate("Main");
-        }
-      });
-      return unsubscribe;
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
 
   return (
     <SafeAreaView

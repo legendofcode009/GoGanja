@@ -34,6 +34,7 @@ const FilterScreen = () => {
             && (clinic.services.some(service => selectedServices.includes(service)) || selectedServices.includes("Any Service"))
             //&& (!clinic.openingHours.hours[selectedDate.getDay()].closed || selectedDate === null);
         });
+        //console.log(filteredClinics);
         navigation.navigate("Search", { results: filteredClinics });
     };
 

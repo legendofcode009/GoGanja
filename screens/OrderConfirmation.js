@@ -1,25 +1,88 @@
-import React, {useState} from "react";
-import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, {useState, useEffect} from "react";
+import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable, ActivityIndicator } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {Ionicons, AntDesign} from "@expo/vector-icons";
 import { Icon, Divider } from '@rneui/themed';
 import PageHeader from "../components/PageHeader";
+import { db } from "../firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
+import { auth } from "../firebaseConfig";
 
 const OrderConfirmation = () => {
     const navigation = useNavigation();
-    const { width, height } = Dimensions.get("window");
+    const route = useRoute();
+    const passedTotalPrice = route.params.totalPrice;
+    const selectedRecipes = route.params.selectedRecipes;
 
     const [email,setEmail] = useState();
-    const [password,setPassword] = useState();
     const [phoneNumber,setPhoneNumber] = useState();
+    const [name,setName] = useState();
+    const [loading,setLoading] = useState(true);
+    const [totalPrice,setTotalPrice] = useState(0);
 
-    services = [
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-    ]
+    useEffect(() => {
+        try {
+            selectedRecipes.forEach(item => {
+                item.quantity = 1;
+            });
+            setTotalPrice(passedTotalPrice);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching recipes: ", error);
+        }
+    }, []);
+
+    const handleAdd = (item) => {
+        item.quantity += 1;
+        setTotalPrice(totalPrice + item.price);
+    }
+
+    const handleRemove = (item) => {
+        if (item.quantity > 1) {
+            item.quantity -= 1;
+            setTotalPrice(totalPrice - item.price);
+        }
+    }
+
+    const completeOrder = async () => {
+        try {
+            setLoading(true);
+            const prescriptionData = {
+                userId: auth.currentUser.uid,
+                clientAddress: "1234 Main St, City, Country",
+                clinicAdminUid: "6XaoI1YH8NVdVHVfrOfMKWOXgA43",
+                email: email,
+                phoneNumber: phoneNumber,
+                patientName: name,
+                recipeCode: "12348-65",
+                totalPrice: totalPrice,
+                medications: selectedRecipes.map(recipe => ({
+                    medicationId: recipe.id,
+                    name: recipe.name,
+                    quantity: recipe.quantity,
+                    price: recipe.price,
+                    dosage: "300mg"
+                })),
+                status: "active",
+                createdAt: new Date().toISOString(),
+                diagnosis: "Fever",
+                doctorName: "Dr. John Doe",
+                clinicAddress: "1234 Main St, City, Country",
+            };
+
+            const docRef = await addDoc(collection(db, "clinics_prescriptions"), prescriptionData);
+            navigation.navigate("Main");
+        } catch (error) {
+            console.error("Error creating prescription:", error);
+        } finally {
+            setLoading(false);
+        }
+
+    }
+
+    if (loading) {
+        return <ActivityIndicator style = {{flex: 1, justifyContent: "center", alignItems: "center"}} size="large" color="#0000ff" />;
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -40,37 +103,37 @@ const OrderConfirmation = () => {
                     </View>
                     <Divider orientation="vertical" />
                     {
-                        services.map((item, index) => (
-                            <>
-                                <View key = {index} style={[styles.bsServicerow, ]}>
+                        selectedRecipes.map((item, index) => (
+                            <View key = {index}>
+                                <View style={[styles.bsServicerow, ]}>
                                     <View style={styles.firstHead}>
-                                        <Text style={styles.bsPricetext}>{item.title} :</Text>
+                                        <Text style={styles.bsPricetext}>{item.name} :</Text>
                                     </View>
                                     <View style={styles.oneFlex}>
-                                        <Ionicons size = {28} name = {"remove-circle-outline"} color = {"#DEBA5C"} />
+                                        <Ionicons size = {28} name = {"remove-circle-outline"} color = {"#DEBA5C"} onPress={() => handleRemove(item)} />
                                     </View>
                                     <View style={styles.oneFlex}>
-                                        <Text style = {styles.bsText}>1</Text>
+                                        <Text style = {styles.bsText}>{item.quantity}</Text>
                                     </View>
                                     <View style={styles.oneFlex}>
-                                        <Ionicons size = {28} name = {"add-circle-outline"} color = {"#DEBA5C"} />
+                                        <Ionicons size = {28} name = {"add-circle-outline"} color = {"#DEBA5C"} onPress={() => handleAdd(item)} />
                                     </View>
                                     <View style={styles.twoFlex}>
-                                        <Text style={styles.bsText}>${item.price}</Text>
+                                        <Text style={styles.bsText}>${(item.price * item.quantity).toFixed(2)}</Text>
                                     </View>
                                     <View style={styles.oneFlex}>
                                         <AntDesign size = {18} name = {"close"} />
                                     </View>
                                 </View>
                                 <Divider orientation="vertical" />
-                            </>
+                            </View>
                             
                         ))
                     }
 
-                    <Pressable style = {styles.totalButton} onPress={() => navigation.navigate("ScheduleClinic2")}>
+                    <Pressable style = {styles.totalButton} onPress={() => navigation.goBack()}>
                         <Text style={styles.btText}>Total Price :</Text>
-                        <Text style={styles.btText}>$70</Text>
+                        <Text style={styles.btText}>${totalPrice.toFixed(2)}</Text>
                     </Pressable>
                     
                     <View style ={{width: "100%", alignItems: "center"}}>
@@ -79,6 +142,13 @@ const OrderConfirmation = () => {
                     
 
                     <View style={styles.inputcontainer}>
+                        <TextInput
+                            value={name}
+                            onChangeText={(text) => setName(text)}
+                            placeholder="Name"
+                            placeholderTextColor={"#808080"}
+                            style={ styles.textinput }
+                        />
                         <TextInput
                             value={email}
                             onChangeText={(text) => setEmail(text)}
@@ -93,13 +163,6 @@ const OrderConfirmation = () => {
                             placeholderTextColor={"#808080"}
                             style={ styles.textinput }
                         />
-                        <TextInput
-                            value={password}
-                            onChangeText={(text) => setPassword(text)}
-                            placeholder="Password"
-                            placeholderTextColor={"#808080"}
-                            style={ styles.textinput }
-                        />
                     </View>
 
                     <Text style={styles.bsSubheader}>Payment Method</Text>
@@ -111,7 +174,7 @@ const OrderConfirmation = () => {
                         <View style = {styles.flexLeft}><Image style={styles.payIcon} resizeMode="cover" source={require("../assets/visa.png")} /></View>
                         <View style = {styles.flexRight}><Text style = {[styles.bsSubheader, {marginBottom: 0,}]}>Credit Card</Text><Text style = {styles.bsSubheader}>**** **** **** 6542</Text></View>
                     </View>
-                    <Pressable style = {styles.button} onPress={() => navigation.navigate("PaymentFailed")}><Text style = {styles.btText}>Complete</Text></Pressable>
+                    <Pressable style = {styles.button} onPress={() => completeOrder()}><Text style = {styles.btText}>Complete</Text></Pressable>
                     <View style = {{height: 80,}}></View>
                     {/* Repeat service rows as needed */}
                 </ScrollView>

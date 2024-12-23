@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
-import Tour from './Tour';
-import Hotel from './Hotel';
+import Tour from './HomeTour';
+import Hotel from './HomeHotel';
 import BookingHeader from '../components/BookingHeader';
 import BookingClinic from '../components/BookingClinic';
 

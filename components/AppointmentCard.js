@@ -8,9 +8,8 @@ import { doc, getDoc } from 'firebase/firestore';
 
 
 
-const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment }) => {
+const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment, clinic }) => {
   const navigation = useNavigation();
-  const [open, setOpen] = useState(false);
 
   const handleOptionPress = (action) => {
     switch (action) {
@@ -26,31 +25,19 @@ const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment }) => {
     }
     toggleDropdown(false);
   };
-  const [clinic, setClinic] = useState(null);
 
-  useEffect(() => {
-    const fetchClinicData = async () => {
-      try {
-        const clinicDoc = await getDoc(doc(db, 'clinics', appointment.clinicId));
-        if (clinicDoc.exists()) {
-          setClinic(clinicDoc.data());
-        }
-      } catch (error) {
-        console.error("Error fetching clinic data:", error);
-      }
-    };
-
-    if (appointment?.clinicId) {
-      console.log(appointment);
-      fetchClinicData();
-    }
-  }, [appointment]);
 
   return (
     <View style={styles.card}>
-      <Pressable style={styles.headContainer} onPress={() => navigation.navigate("AppointmentDetail", { appointmentId: appointment.id })}>
+      <Pressable style={styles.headContainer} onPress={() => navigation.navigate("AppointmentDetail", { appointmentId: appointment.id, clinicId: clinic.id })}>
         <Text style={styles.headText}>Name Procedure</Text>
-        <Text style={styles.timeText}>20 May 2024 - 12:00</Text>
+        <Text style={styles.timeText}>{appointment?.id ? new Date(appointment.createdAt).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).replace(',', ' -') : ''}</Text>
       </Pressable>
       <View style={styles.rowContainer}>
         <View style={styles.imageContainer}>
@@ -62,7 +49,14 @@ const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment }) => {
         </View>
         <View style={styles.contentContainer}>
           <Text style={styles.bgText}>{clinic?.name}</Text>
-          <Text style={styles.smText}>{appointment?.id ? new Date(appointment.appointmentDate.seconds * 1000).toLocaleString() : ''}</Text>
+          <Text style={styles.smText}>{appointment?.id ? new Date(appointment.bookedAt).toLocaleDateString('en-GB', {
+          day: 'numeric',
+          month: 'short', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).replace(',', ' -') : ''}
+        </Text>
           <Text style={styles.smText}>{appointment?.totalPrice}</Text>
         </View>
         <TouchableOpacity

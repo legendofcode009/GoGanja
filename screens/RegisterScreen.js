@@ -52,6 +52,13 @@ const RegisterScreen = () => {
                     email: user.email,
                     phoneNumber: phoneNumber,
                     userType: "User",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    address: "",
+                    city: "Warsaw",
+                    state: "",
+                    zip: "",
+                    country: "",
                 });
             })
             .then(() => {

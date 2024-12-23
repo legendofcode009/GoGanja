@@ -1,146 +1,156 @@
 import React, {useState} from "react";
-import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable } from "react-native";
+import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Pressable, KeyboardAvoidingView, ActivityIndicator, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Icon, Divider } from '@rneui/themed';
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { Alert } from "react-native";
 import { auth } from "../firebaseConfig";
 
 const ScheduleClinic3 = () => {
     const navigation = useNavigation();
-    const { width, height } = Dimensions.get("window");
-
     const [email,setEmail] = useState();
-    const [password,setPassword] = useState();
+    const [name,setName] = useState();
     const [phoneNumber,setPhoneNumber] = useState();
+    const [loading, setLoading] = useState(false);
     const route = useRoute();
-    const clinic = route.params.clinic;
+    const clinicId = route.params.clinicId;
     const selectedServices = route.params.selectedServices;
-    const selectedDate = new Date(route.params.selectedDate);
+    const selectedDate = route.params.selectedDate;
     const totalPrice = route.params.totalPrice;
 
+
     const handleComplete = () => {
-        const bookingRef = doc(db, "clinics_bookings", clinic.id + "_" + selectedDate.getTime());
-        setDoc(bookingRef, {
-            clinicId: clinic.id,
-            clinicName: clinic.name,
-            services: selectedServices,
-            appointmentDate: selectedDate,
-            bookedDate: new Date(),
+        setLoading(true);
+        const bookingCollectionRef = collection(db, "clinics_bookings");
+        addDoc(bookingCollectionRef, {
+            clinicId: clinicId,
+            clientName: name,
+            clientEmail: email,
+            clientPhone: phoneNumber,
+            selectedServices: selectedServices,
+            bookedAt: selectedDate,
+            createdAt: new Date().toISOString(),
             totalPrice: totalPrice,
-            email: email,
             userId: auth.currentUser.uid,
-            phoneNumber: phoneNumber,
-            status: "pending"
+            status: "pending",
+            pinCode: Math.floor(1000 + Math.random() * 9000).toString(),
+            confirmationCode: Math.floor(1000 + Math.random() * 9000).toString(),
+            doctorName: "Dr. John Doe",
         })
         .then(() => {
+            setLoading(false);
             Alert.alert("Success", "Your appointment has been booked!");
             navigation.navigate("Main");
         })
         .catch((error) => {
+            setLoading(false);
             Alert.alert("Error", "Failed to book appointment: " + error.message);
         });
     }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <View style={styles.bsContainer}>
-                <Text style={styles.bsHeader}>Schedule Appointment</Text>
-                <Text style={styles.bsSubheader}>Your Order</Text>
-                <ScrollView style={styles.bsServicecontainer}>
-                    <View style = {styles.bsServicerow}>
-                        <Text style={styles.bsSubheader}>Date</Text>
-                        <Text style={styles.dataTimeText}>
-                            {selectedDate.toLocaleDateString('en-US', {
-                                year: 'numeric', // "2023"
-                                month: 'short', // "October"
-                                day: 'numeric' // "23"
-                            })}
-                             - {selectedDate.toLocaleTimeString('en-US', {
-                                hour: 'numeric',
-                                minute: 'numeric',
-                                hour12: true
-                            })}
-                        </Text>
-                    </View>
-                    <View style={[styles.bsServicerow, { marginBottom: 5 }]}>
-                        <View style={styles.bsServiceleft}>
-                            <Text style={styles.bsSmtext}>Name of the service</Text>
+                <View style={styles.bsContainer}>
+                    <Text style={styles.bsHeader}>Schedule Appointment</Text>
+                    <Text style={styles.bsSubheader}>Your Order</Text>
+                    <ScrollView style={styles.bsServicecontainer}>
+                        <View style = {styles.bsServicerow}>
+                            <Text style={styles.bsSubheader}>Date</Text>
+                            <Text style={styles.dataTimeText}>
+                                {new Date(selectedDate).toLocaleDateString('en-US', {
+                                    year: 'numeric', // "2023"
+                                    month: 'short', // "October"
+                                    day: 'numeric' // "23"
+                                })}
+                                 - {new Date(selectedDate).toLocaleTimeString('en-US', {
+                                    hour: 'numeric',
+                                    minute: 'numeric',
+                                    hour12: true
+                                })}
+                            </Text>
                         </View>
-                        <View style={styles.bsServiceright}>
-                            <Text style={styles.bsSmtext}>Price</Text>
-                        </View>
-                    </View>
-                    <Divider orientation="vertical" />
-                    {
-                        selectedServices.map((item, index) => (
-                            <View key = {index}>
-                                <View style={[styles.bsServicerow, ]}>
-                                    <View style={styles.bsServiceleft}>
-                                        <Text style={styles.bsText}>{item} :</Text>
-                                    </View>
-                                    <View style={styles.bsServiceright}>
-                                        <Text style={styles.bsPricetext}>$50</Text>
-                                    </View>
-                                </View>
-                                <Divider orientation="vertical" />
+                        <View style={[styles.bsServicerow, { marginBottom: 5 }]}>
+                            <View style={styles.bsServiceleft}>
+                                <Text style={styles.bsSmtext}>Name of the service</Text>
                             </View>
-                            
-                        ))
-                    }
+                            <View style={styles.bsServiceright}>
+                                <Text style={styles.bsSmtext}>Price</Text>
+                            </View>
+                        </View>
+                        <Divider orientation="vertical" />
+                        {
+                            selectedServices.map((item, index) => (
+                                <View key = {index}>
+                                    <View style={[styles.bsServicerow, ]}>
+                                        <View style={styles.bsServiceleft}>
+                                            <Text style={styles.bsText}>{item.name} :</Text>
+                                        </View>
+                                        <View style={styles.bsServiceright}>
+                                            <Text style={styles.bsPricetext}>${item.price}</Text>
+                                        </View>
+                                    </View>
+                                    <Divider orientation="vertical" />
+                                </View>
+                                
+                            ))
+                        }
 
-                    <Pressable style = {styles.totalButton} onPress={() => navigation.navigate("ScheduleClinic", {clinic: clinic, selectedServices: selectedServices})}>
-                        <Text style={styles.bsText}>Total Price :</Text>
-                        <Text style={styles.bsPricetext}>${totalPrice}</Text>
-                    </Pressable>
+                        <Pressable style = {styles.totalButton} onPress={() => navigation.navigate("ScheduleClinic", {clinic: clinic, selectedServices: selectedServices})}>
+                            <Text style={styles.bsText}>Total Price :</Text>
+                            <Text style={styles.bsPricetext}>${totalPrice}</Text>
+                        </Pressable>
+                        
+                        <View style ={{width: "100%", alignItems: "center"}}>
+                            <Text style={{textAlign: "center", fontSize: 16, margin: 8}}>Enter your contact details to complete your appointment</Text>
+                        </View>
+                        
+
+                        <KeyboardAvoidingView style={styles.inputcontainer}>
+                            <TextInput
+                                value={name}
+                                onChangeText={(text) => setName(text)}
+                                placeholder="Name"
+                                placeholderTextColor={"#808080"}
+                                style={ styles.textinput }
+                            />
+                            <TextInput
+                                value={email}
+                                onChangeText={(text) => setEmail(text)}
+                                placeholder="Email"
+                                placeholderTextColor={"#808080"}
+                                style={ styles.textinput }
+                            />
+                            <TextInput
+                                value={phoneNumber}
+                                onChangeText={(text) => setPhoneNumber(text)}
+                                placeholder="Phone Number"
+                                placeholderTextColor={"#808080"}
+                                style={ styles.textinput }
+                            />
+                        </KeyboardAvoidingView>
+
+                        {loading && (
+                            <ActivityIndicator size="large" color="#314435" style={{ marginVertical: 20 }} />
+                        )}
+
+                        <Text style={styles.bsSubheader}>Payment Method</Text>
+                        <View style = {styles.paycontainer}>
+                            <View style = {styles.bsServiceright}><Image style={styles.payIcon} resizeMode="cover" source={require("../assets/cash.png")} /></View>
+                            <View style = {styles.bsServiceleft}><Text style = {styles.bsSubheader}>Cash at the reception</Text></View>
+                        </View>
+                        <View style = {styles.paycontainer}>
+                            <View style = {styles.bsServiceright}><Image style={styles.payIcon} resizeMode="cover" source={require("../assets/visa.png")} /></View>
+                            <View style = {styles.bsServiceleft}><Text style = {styles.bsSubheader}>Credit Card</Text><Text style = {styles.bsSubheader}>**** **** **** 6542</Text></View>
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Pressable style = {styles.button} onPress={handleComplete} disabled={loading}><Text style = {styles.btText}>Complete</Text></Pressable>
+                        </View>
+                        <View style = {{height: 100,}}></View>
+                        {/* Repeat service rows as needed */}
+                    </ScrollView>
                     
-                    <View style ={{width: "100%", alignItems: "center"}}>
-                        <Text style={{textAlign: "center", fontSize: 16, margin: 8}}>Enter your contact details to complete your appointment</Text>
-                    </View>
-                    
-
-                    <View style={styles.inputcontainer}>
-                        <TextInput
-                            value={email}
-                            onChangeText={(text) => setEmail(text)}
-                            placeholder="Email"
-                            placeholderTextColor={"#808080"}
-                            style={ styles.textinput }
-                        />
-                        <TextInput
-                            value={phoneNumber}
-                            onChangeText={(text) => setPhoneNumber(text)}
-                            placeholder="Phone Number"
-                            placeholderTextColor={"#808080"}
-                            style={ styles.textinput }
-                        />
-                        <TextInput
-                            value={password}
-                            onChangeText={(text) => setPassword(text)}
-                            placeholder="Password"
-                            placeholderTextColor={"#808080"}
-                            style={ styles.textinput }
-                        />
-                    </View>
-
-                    <Text style={styles.bsSubheader}>Payment Method</Text>
-                    <View style = {styles.paycontainer}>
-                        <View style = {styles.bsServiceright}><Image style={styles.payIcon} resizeMode="cover" source={require("../assets/cash.png")} /></View>
-                        <View style = {styles.bsServiceleft}><Text style = {styles.bsSubheader}>Cash at the reception</Text></View>
-                    </View>
-                    <View style = {styles.paycontainer}>
-                        <View style = {styles.bsServiceright}><Image style={styles.payIcon} resizeMode="cover" source={require("../assets/visa.png")} /></View>
-                        <View style = {styles.bsServiceleft}><Text style = {styles.bsSubheader}>Credit Card</Text><Text style = {styles.bsSubheader}>**** **** **** 6542</Text></View>
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Pressable style = {styles.button} onPress={handleComplete}><Text style = {styles.btText}>Complete</Text></Pressable>
-                    </View>
-                    <View style = {{height: 100,}}></View>
-                    {/* Repeat service rows as needed */}
-                </ScrollView>
-                
-            </View>
+                </View>
             <Image style={styles.image} blurRadius={4} resizeMode="cover" source={require("../assets/clinicback.png")} />
         </SafeAreaView>
     );

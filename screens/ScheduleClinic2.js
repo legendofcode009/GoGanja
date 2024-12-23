@@ -9,12 +9,12 @@ const ScheduleClinic2 = () => {
     const [hour, setHour] = useState('12'); // Default hour
     const [minute, setMinute] = useState('00'); // Default minute
     const route = useRoute();
-    const clinic = route.params.clinic;
+    const clinicId = route.params.clinicId;
     const selectedServices = route.params.selectedServices;
     const totalPrice = route.params.totalPrice;
 
     const handleDayPress = (day) => {
-        const pressedDate = new Date(day.dateString + 'T00:00:00');
+        const pressedDate = new Date(day.dateString + 'T12:00:00');
         if (selectedDate && pressedDate.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0]) {
             setSelectedDate(null); // Unselect if the same date is pressed
         } else {
@@ -34,7 +34,7 @@ const ScheduleClinic2 = () => {
                 `Date: ${selectedDate.toLocaleDateString()}\nTime: ${selectedDate.toLocaleTimeString()}`, 
                 [
                     {text: "OK", onPress: () => navigation.navigate("ScheduleClinic3", { 
-                        clinic: clinic, 
+                        clinicId: clinicId, 
                         selectedServices: selectedServices, 
                         selectedDate: selectedDate.toISOString(), 
                         totalPrice: totalPrice })},
@@ -123,7 +123,7 @@ const ScheduleClinic2 = () => {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <Pressable style={styles.button} onPress={() => navigation.navigate("ScheduleClinic", {clinic: clinic})}>
+                    <Pressable style={styles.button} onPress={() => navigation.navigate("ScheduleClinic", {clinicId: clinicId})}>
                         <Text style={styles.btText}>Total: ${totalPrice}</Text>
                     </Pressable>
                     <Pressable style={styles.button} onPress={handleNext}>

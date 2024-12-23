@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import Header from '../components/Header';
 import HomeClinic from './HomeClinic';
-import Tour from './Tour';
-import Hotel from './Hotel';
+import Tour from './HomeTour';
+import Hotel from './HomeHotel';
 
 const Main = () => {
     const [selectedTab, setSelectedTab] = useState(0);

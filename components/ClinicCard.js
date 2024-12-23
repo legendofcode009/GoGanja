@@ -15,7 +15,7 @@ const ClinicCard = ({clinic}) => {
   return (
     <View style={styles.card}>
       <View style = {{borderRadius: 20, width: "100%", height: 254, borderWidth: 0, borderColor:"#3333ff", overflow: "hidden"}}>
-        <Pressable onPress = {() => {navigation.navigate("Clinic", {clinic: clinic})}}>
+        <Pressable onPress = {() => {navigation.navigate("Clinic", {clinic: clinic.id})}}>
           <Image
             source={{ uri: clinic.featuredImage }}
             style={styles.image}
@@ -30,9 +30,9 @@ const ClinicCard = ({clinic}) => {
       </View>
       <View style = {{flexDirection : "row", marginTop: 8, }}>
         <Text style={styles.clinicName}>{clinic.name}</Text>
-        <Text style={styles.rating}>⭐ 5.0</Text>
+        <Text style={styles.rating}>⭐ {clinic.rating}</Text>
       </View>
-      <Text style={styles.location}>{clinic.address}</Text>
+      <Text style={styles.location}>{clinic.city}</Text>
       <Text style={styles.consultFee}>{clinic.initialConsultFee}</Text>
     </View>
   );

@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import { collection, getDocs } from "firebase/firestore";
 import { query, where, orderBy } from "firebase/firestore";
 import { db } from "../firebaseConfig";
@@ -20,7 +20,9 @@ const BookingClinic = () => {
   const [appointment, setAppointment] = useState(true);
   const [activeDropdownId, setActiveDropdownId] = useState(null);
   const [bookings, setBookings] = useState([]);
+  const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [clinics, setClinics] = useState([]);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -42,6 +44,43 @@ const BookingClinic = () => {
     fetchBookings();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchRecipes = async () => {
+        setLoading(true); // Start loading
+        try {
+          const authUserId = auth.currentUser.uid; // Replace with actual user ID retrieval logic
+          const recipesQuery = query(
+            collection(db, "clinics_prescriptions"),
+            where("userId", "==", authUserId)
+          );
+          const snapshot = await getDocs(recipesQuery);
+          setRecipes(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        } catch (error) {
+          console.error("Error fetching recipes: ", error);
+        } finally {
+          setLoading(false); // End loading
+        }
+      };
+      fetchRecipes();
+    }, [])
+  );
+
+  useEffect(() => {
+    const fetchClinics = async () => {
+      setLoading(true);
+      try {
+        const snapshot = await getDocs(collection(db, "clinics"));
+        setClinics(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (error) {
+        console.error("Error fetching clinics: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchClinics();
+  }, []);
+
   const toggleDropdown = (id) => {
     setActiveDropdownId((prevId) => (prevId === id ? null : id));
   };
@@ -51,6 +90,15 @@ const BookingClinic = () => {
       isDropdownOpen={activeDropdownId === item.id}
       toggleDropdown={() => toggleDropdown(item.id)}
       appointment={item}
+      clinic = {clinics.find(clinic => clinic.id === item.clinicId)}
+    />
+  );
+
+  const renderRecipeItem = ({ item }) => (
+    <RecipeCard
+      recipe={item}
+      isDropdownOpen={activeDropdownId === item.id}
+      toggleDropdown={() => toggleDropdown(item.id)}
     />
   );
 
@@ -80,11 +128,9 @@ const BookingClinic = () => {
             contentContainerStyle={{ paddingBottom: 70 }}
           /> :
           <FlatList
-              data={[1, 2, 3]} // Dummy data for recipes
-              renderItem={() => (
-                <RecipeCard />
-              )}
-              keyExtractor={(item, index) => index.toString()}
+              data={recipes} // Dummy data for recipes
+              renderItem={renderRecipeItem}
+              keyExtractor={item => item.id}
               ListHeaderComponent={() => (
                 <Pressable style={styles.newPress} onPress={() => navigation.navigate("OrderRecipe")}><Text style={styles.newText}>Order a recipe</Text></Pressable>
               )}

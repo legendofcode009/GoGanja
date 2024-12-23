@@ -5,26 +5,35 @@ import {Entypo, Ionicons} from "@expo/vector-icons"
 import { Divider } from '@rneui/themed';
 
 
-
-const RecipeCard = () => {
+const RecipeCard = ({recipe}) => {
   const navigation = useNavigation();
   const [like, setLike] = useState(false);
   const toggleLike = () => {
     setLike(!like);
   }
+
+  const handleRecipeDetail = () => {
+    console.log(recipe.id);
+    navigation.navigate("RecipeDetail", {recipeId: recipe.id});
+  }
+
   return (
     <View style={styles.card}>
-        <Pressable style = {styles.headContainer} onPress={() => navigation.navigate("RecipeDetail")}>
-            <Text style = {styles.timeText}>20 May 2024 - 12:00</Text>
+        <Pressable style = {styles.headContainer} onPress={() => handleRecipeDetail()}>
+            <Text style={styles.timeText}>
+              {recipe && recipe.createdAt ? 
+                `${new Date(recipe.createdAt).toLocaleDateString()} - ${new Date(recipe.createdAt).toLocaleTimeString()}` 
+                : 'Date not available'}
+            </Text> 
             <View style = {styles.rowContainer}>
                 <Text style = {styles.bgText}>Recipe code: </Text>
-                <Text style = {styles.headText}>2690</Text>
-            </View>
-            <Text style = {styles.smText}>Doctor's Name</Text>
-            <Text style = {styles.headText}>Epidiolex 100 mg.</Text>
+                <Text style = {styles.headText}>{recipe?.recipeCode}</Text>
+            </View> 
+            <Text style = {styles.smText}>{recipe?.doctorName}</Text>
+            <Text style = {styles.headText}>{recipe?.medications[0]?.name} {recipe?.medications[0]?.dosage}</Text>
             <Entypo style = {styles.threeDot} name = "dots-three-vertical" size={16} />
         </Pressable>
-        <View style = {styles.stateCon}><Text>PROCESSING</Text></View>
+        <View style = {styles.stateCon}><Text>{recipe?.status}</Text></View>
         <Divider color='#aaaaaa' />
         <View style = {styles.agianContainer}>
             <Text style = {styles.againText}><Ionicons size={24} color={"#DEBA5C"} name = "sync" />   Order the recipe again</Text>

@@ -22,7 +22,7 @@ const SelectLocation = ({location, setLocation}) =>{
         setActiveSection((prevActiveSection) => 
             prevActiveSection === index ? null : index
         );
-        setLocation(sections[index].name);
+        setLocation(sections[index].name); 
     }, []);
 
     return(

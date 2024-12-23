@@ -1,33 +1,55 @@
-import React from "react";
-import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, ActivityIndicator, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {Ionicons, Feather} from "@expo/vector-icons";
 import { Icon, Divider } from '@rneui/themed';
 import PageHeader from "../components/PageHeader";
+import { db } from "../firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
 
 const OrderRecipe = () => {
     const navigation = useNavigation();
-    const { width, height } = Dimensions.get("window");
+    const [selectedRecipes, setSelectedRecipes] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [medicals, setMedicals] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    services = [
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-        {title: "Consultation with a doctor", price: 30},
-    ]
+    const handleRecipeSelection = (medical) => {
+        setSelectedRecipes(prevSelectedRecipes => {
+            if (prevSelectedRecipes.includes(medical)) {
+                setTotalPrice(prevTotalPrice => prevTotalPrice - medical.price);
+                return prevSelectedRecipes.filter(i => i !== medical);
+            } else {
+                setTotalPrice(prevTotalPrice => prevTotalPrice + medical.price);
+                return [...prevSelectedRecipes,  medical   ];
+            }
+        });
+        console.log(totalPrice);
+    };
+
+    useEffect(() => {
+        const fetchMedicals = async () => {
+            try {
+                const snapshot = await getDocs(collection(db, "clinics_medicals"));
+                const medicals = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setMedicals(medicals);
+            } catch (error) {
+                console.error("Error fetching medicals:", error.message);
+                console.error("Error details:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchMedicals();
+    }, []);
+
+    const handleNext = () => {
+        navigation.navigate("OrderConfirmation", {totalPrice: totalPrice, selectedRecipes: selectedRecipes});
+    }
+
+    if (loading) {
+        return <ActivityIndicator style={{flex: 1, justifyContent: "center", alignItems: "center"}} size="large" color="#0000ff" />;
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -39,13 +61,13 @@ const OrderRecipe = () => {
                         placeholderTextColor="black"
                         placeholder="Search Clinic"
                         style = {{
-                        display: "flex",
-                        height: 48,
-                        borderRadius: 16,
-                        borderWidth: 1,
-                        borderColor: "#cecece",
-                        paddingHorizontal: 40,
-                        flexGrow: 1
+                            display: "flex",
+                            height: 48,
+                            borderRadius: 16,
+                            borderWidth: 1,
+                            borderColor: "#cecece",
+                            paddingHorizontal: 40,
+                            flexGrow: 1
                         }}
                         onEndEditing={() => {}}
                     >
@@ -62,16 +84,22 @@ const OrderRecipe = () => {
                     </View>
                     <Divider orientation="vertical" />
                     {
-                        services.map((item, index) => (
+                        medicals.map((item, index) => (
                             <View key = {index}>
                                 <View style={[styles.bsServicerow, ]}>
                                     <View style={styles.bsServicefirst}>
-                                        <Text style={styles.bsText}>{item.title} :</Text>
+                                        <Text style={styles.bsText}>{item.name} :</Text>
                                     </View>
                                     <View style={styles.bsServicesecond}>
                                         <Text style={styles.bsPricetext}>${item.price}</Text>
                                     </View>
-                                    <View style = {styles.bsServicethird}><Ionicons size = {32} name = {"add-circle-outline"} color = {"#DEBA5C"} /></View>
+                                    {
+                                        selectedRecipes.includes(item) ? (
+                                            <View style = {styles.bsServicethird}><Ionicons size = {32} name = {"remove-circle-outline"} color = {"#DEBA5C"} onPress={() => handleRecipeSelection(item)}/></View>
+                                        ) : (
+                                            <View style = {styles.bsServicethird}><Ionicons size = {32} name = {"add-circle-outline"} color = {"#DEBA5C"} onPress={() => handleRecipeSelection(item)}/></View>
+                                        )
+                                    }
                                 </View>
                                 <Divider orientation="vertical" />
                             </View>
@@ -82,7 +110,7 @@ const OrderRecipe = () => {
                     <View style = {{height: 80,}}></View>
                 </ScrollView>
                 <View style={styles.buttonContainer}>
-                    <Pressable style = {styles.button} onPress={() => navigation.navigate("OrderConfirmation")}><Text style = {styles.btText}>Next</Text></Pressable>
+                    <Pressable style = {styles.button} onPress={() => handleNext()}><Text style = {styles.btText}>Next</Text></Pressable>
                 </View>
             </View>
         </SafeAreaView>

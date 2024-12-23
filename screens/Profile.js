@@ -13,6 +13,7 @@ const Profile = () => {
     const [name, setName] = useState("");
     const [password,setPassword] = useState("");
     const [phoneNumber,setPhoneNumber] = useState("");
+    const [city, setCity] = useState("");
     const [imageUri, setImageUri] = useState(require("../assets/download.png"));
     const navigation = useNavigation();
     const [isEnglish, setIsEnglish] = useState(true); // true for Dates, false for Months
@@ -20,7 +21,7 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
+            try { 
                 const user = auth.currentUser;
                 if (user) {
                     setEmail(user.email);
@@ -32,7 +33,7 @@ const Profile = () => {
                 setLoading(false); // Ensure loading is set to false after data fetching
             }
         };
-
+ 
         fetchData();
     }, []);
 
@@ -50,6 +51,9 @@ const Profile = () => {
             }
             if (data.phoneNumber) {
                 setPhoneNumber(data.phoneNumber);
+            }
+            if (data.city) {
+                setCity(data.city);
             }
         }
     };
@@ -178,12 +182,11 @@ const Profile = () => {
                         style={ styles.textinput }
                     />
                     <TextInput
-                        value={password}
-                        onChangeText={(text) => setPassword(text)}
-                        placeholder="Password"
+                        value={city}
+                        onChangeText={(text) => setCity(text)}
+                        placeholder="City"
                         placeholderTextColor={"#808080"}
                         style={ styles.textinput }
-                        secureTextEntry
                     />
                 </View>
                 <View style = {styles.rowContainer}>

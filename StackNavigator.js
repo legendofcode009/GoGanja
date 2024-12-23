@@ -7,15 +7,15 @@ import BookingScreen from "./screens/BookingScreen";
 import { Ionicons } from "@expo/vector-icons";
 import {StyleSheet} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import SearchScreen from "./screens/SearchScreen";
+import SearchScreen from "./screens/SearchResult";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import FiltersScreen from "./screens/FiltersScreen";
-import ClinicScreen from "./screens/ClinicScreen";
+import ClinicScreen from "./screens/ClinicDetail";
 import ScheduleClinic from "./screens/ScheduleClinic";
 import ScheduleClinic2 from "./screens/ScheduleClinic2";
 import ScheduleClinic3 from "./screens/ScheduleClinic3";
-import Main from "./screens/Main";
+import HomeMain from "./screens/HomeMain";
 import Profile from "./screens/Profile";
 import AppointmentDetail from "./screens/AppointmentDetail";
 import RecipeDetail from "./screens/RecipeDetail";
@@ -32,7 +32,7 @@ function BottomTabs() {
     <Tab.Navigator>
       <Tab.Screen
         name="Home"
-        component={Main}
+        component={HomeMain}
         options={{
           tabBarLabel: "Home",
           headerShown: false,

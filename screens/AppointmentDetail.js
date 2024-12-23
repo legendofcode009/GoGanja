@@ -9,7 +9,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 const AppointmentDetail = () => {
     const route = useRoute();
-    const { appointmentId } = route.params;
+    const { appointmentId, clinicId } = route.params;
     const [appointment, setAppointment] = useState(null);
     const [clinic, setClinic] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ const AppointmentDetail = () => {
         const fetchClinic = async () => {
             if (appointment) {
                 try {
-                    const clinicDoc = await getDoc(doc(db, 'clinics', appointment.clinicId));
+                    const clinicDoc = await getDoc(doc(db, 'clinics', clinicId));
                     if (clinicDoc.exists()) {
                         setClinic(clinicDoc.data());
                     }
@@ -47,7 +47,7 @@ const AppointmentDetail = () => {
     }, [appointment]);
 
     if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
+        return <ActivityIndicator style={{ marginTop: 200 }} size="large" color="#0000ff" />;
     }
 
     return (
@@ -57,19 +57,19 @@ const AppointmentDetail = () => {
                 <View style={styles.cardContainer}>
                     <View style={styles.leftCon}>
                         <Text style={styles.subHeader}>Confirmation number</Text>
-                        <Text style={styles.contactText}>776435903  <Ionicons size={18} name={"copy-outline"} /></Text>
+                        <Text style={styles.contactText}>{appointment?.confirmationCode}  <Ionicons size={15} name={"copy-outline"} /></Text>
                     </View>
                     <Divider orientation="vertical" />
                     <View style={styles.rightCon}>
                         <Text style={styles.subHeader}>PIN - code</Text>
-                        <Text style={styles.contactText}>4456 </Text>
+                        <Text style={styles.contactText}>{appointment?.pinCode} </Text>
                     </View>
                 </View>
                 <Text style={styles.titleText} >{clinic?.name}</Text>
                 <View style={styles.contentCon}>
                     <Text style={styles.mdText}>
-                        {appointment && appointment.appointmentDate ?
-                            new Date(appointment.appointmentDate.seconds * 1000).toLocaleString(undefined, {
+                        {appointment && appointment.bookedAt ?
+                            new Date(appointment.bookedAt).toLocaleString(undefined, {
                                 year: 'numeric',
                                 month: 'short',
                                 day: 'numeric',
@@ -100,10 +100,10 @@ const AppointmentDetail = () => {
                 <Divider style={{ paddingHorizontal: 20, }}></Divider>
                 <View style={styles.contentCon2}>
                     <Text style={styles.nameText}>Name Procedure</Text>
-                    <Text style={styles.smText}>Doctor's Name</Text>
+                    <Text style={styles.smText}>{appointment?.DoctorName}</Text>
                     <View style={styles.priceRow}>
                         <Text style={styles.smText}>Total Price</Text>
-                        <Text style={styles.titleText}>$57</Text>
+                        <Text style={styles.titleText}>${appointment?.totalPrice}</Text>
                     </View>
                 </View>
                 <View style={styles.contentCon2}>

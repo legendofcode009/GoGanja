@@ -9,7 +9,7 @@ import {
   Image,
   SafeAreaView,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import ClinicCard from "../components/ClinicCard.js";
 
@@ -26,8 +26,17 @@ const SearchScreen = () => {
     handleSearch();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      // Perform search when the screen is focused
+      handleSearch();
+    }, [searchQuery, initialResults])
+  );
+
   const handleSearch = () => {
     // Assuming initialResults is already filtered based on location, price range, and services
+    console.log(initialResults);
+    console.log(searchQuery);
     const filteredResults = initialResults.filter(clinic =>
       clinic.name.toLowerCase().includes(searchQuery.toLowerCase())
     );

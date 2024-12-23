@@ -5,70 +5,91 @@ import { View, StyleSheet, Image, ScrollView, Text,Button, Dimensions, Pressable
 import { Icon, Divider  } from '@rneui/themed';
 import ReviewCard from '../components/ReviewCard';
 import { useNavigation, useRoute } from "@react-navigation/native";
-
-
+import { getDoc, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 const ClinicScreen = () => {
     const Navigation = useNavigation();
-    const rating = 50;
-    const ratingimage = require('../assets/star.png');
     const route = useRoute();
-    const clinic = route.params?.clinic;
+    const clinicId = route.params?.clinic;
     const width = Dimensions.get('window').width;
-    const [images, setImages] = useState([]);
+    const [clinic, setClinic] = useState(null);
     const [showAllServices, setShowAllServices] = useState(false);
     const maxVisibleServices = 4;
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchImages = async () => {
-            if (clinic && Array.isArray(clinic.additionalImages)) {
-                console.log(clinic);
-                setImages(clinic.additionalImages);
-            } else {
-                console.log('No additional images found or clinic is undefined');
+        const fetchClinic = async () => {
+            try {
+                const clinicDoc = await getDoc(doc(db, 'clinics', clinicId));
+                if (clinicDoc.exists()) {
+                    setClinic(clinicDoc.data());
+                }
+            } catch (error) {
+                console.error("Error fetching clinic data: ", error);
+            } finally {
+                setLoading(false);
             }
         };
-        fetchImages();
-    }, [clinic]);
+        fetchClinic();
+    }, [clinicId]);
 
+    if (loading) {
+        return ( 
+            <View style={styles.loadingContainer}>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
 
+    if (!clinic) {
+        return (
+            <View style={styles.loadingContainer}>
+                <Text>Error loading clinic data.</Text>
+            </View>
+        );
+    }
 
     return (
         <GestureHandlerRootView >
             <View style={styles.pgcontainer}>
                 <ScrollView>
                     <View style={styles.carouselcontainer}>
-                        <Carousel
-                            loop
-                            width={width}
-                            autoPlay={true} 
-                            data={images}
-                            renderItem={({ item, index }) => (
-                                <View
-                                    key = {index}
-                                    style={{
-                                        flex: 1,
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    <Image 
-                                        style={styles.image} 
-                                        source={{ uri: item }} // Use item as the uri
-                                        resizeMode="cover" 
-                                        onError={() => console.log('Error loading image')}
-                                    />
-                                </View>
-                            )}
-                        />
+                        {clinic.additionalImages && clinic.additionalImages.length > 0 ? (
+                            <Carousel
+                                loop
+                                width={width}
+                                autoPlay={true} 
+                                data={clinic.additionalImages}
+                                renderItem={({ item, index }) => (
+                                    <View
+                                        key = {index}
+                                        style={{
+                                            flex: 1,
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        <Image 
+                                            style={styles.image} 
+                                            source={{ uri: item }} // Use item as the uri
+                                            resizeMode="cover" 
+                                            onError={() => console.log('Error loading image')}
+                                        />
+                                    </View>
+                                )}
+                            />
+                        ) : (
+                            <Text>No images available</Text>
+                        )}
                         <View style={styles.backicon}><Icon name="arrowleft" type="antdesign" onPress={() => Navigation.goBack()} /></View>
                         <View style={styles.loveicon}><Icon name="hearto" type="antdesign" /></View>
                     </View>
                     <View style={{ paddingTop: 24, paddingHorizontal: 20, }}>
                         <Text style={styles.name}>{clinic.name}</Text>
-                        <Text style={styles.maintext}>{clinic.address}</Text>
+                        <Text style={styles.maintext}>{clinic.city}</Text>
                         <View style={styles.ratecontainer} >
                             <View style={styles.ratesub}>
-                                <Text style={styles.ratingtext}>{rating}</Text>
+                                <Text style={styles.ratingtext}>{clinic.rating}</Text>
                                 {/* <Rating type='custom' ratingImage={ratingimage} imageSize={18}  startingValue={5} fractions = {1} backgroundColor = {"White"} readonly /> */}
                                 <Text style={styles.rating}>⭐ ⭐ ⭐ ⭐ ⭐</Text>
                             </View>
@@ -90,22 +111,16 @@ const ClinicScreen = () => {
                             <Text style={styles.header}>Clinic Services</Text>
                             <Text style={[styles.smalltext, { marginTop: 8, marginBottom: 8 }]}>Our services include, but are not limited to:</Text>
                             {clinic.services.map((service, index) => (
-                                <View style={styles.bullet} key={index}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>{service}</Text></View>
+                                <View style={styles.bullet} key={index}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>{service.name}</Text></View>
                             ))}
-                            {/* <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Medical consultations with the use of cannabis.
-                            </Text></View>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Selection and updating of recipes.
-                            </Text></View>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Physiotherapy and massage.</Text></View>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>Psychological support and therapy.</Text></View> */}
                         </View>
                         <Divider style={styles.divider} orientation="horizontal" />
                         <View>
                             <Text style={styles.header}>Price List</Text>
                             {clinic.services.slice(0, showAllServices ? clinic.services.length : maxVisibleServices).map((service, index) => (
                                 <View style={styles.pricelist} key={index}>
-                                    <Text style={styles.maintext}>{service}</Text>
-                                    <Text style={styles.pricetext}>$50</Text>
+                                    <Text style={styles.maintext}>{service.name}</Text>
+                                    <Text style={styles.pricetext}>${service.price}</Text>
                                 </View>
                             ))}
                             {!showAllServices ?
@@ -138,7 +153,7 @@ const ClinicScreen = () => {
                         <View>
                             <Text style={styles.header}>Location</Text>
                             <View style = {styles.mapcontainer}><Image style= {{resizeMode: "cover"}} source={require("../assets/map.png")} /></View>
-                            <Text style = {{fontSize: 14,}}>Lorem ipsum dolor sit amet consectetur</Text>
+                            <Text style = {{fontSize: 14,}}>{clinic.address}</Text>
                         </View>
                         
                         <Divider style={styles.divider} orientation="horizontal" /> 
@@ -159,7 +174,7 @@ const ClinicScreen = () => {
 
                 </ScrollView>
                 <View  style={styles.buttoncontainer}>
-                    <Pressable style={styles.button} onPress={() => Navigation.navigate("ScheduleClinic", {clinic: clinic}) } ><Text style={{color: "#fafafa", fontSize:16,}}>Appointment</Text></Pressable>
+                    <Pressable style={styles.button} onPress={() => Navigation.navigate("ScheduleClinic", {clinicId: clinic.id}) } ><Text style={{color: "#fafafa", fontSize:16,}}>Appointment</Text></Pressable>
                 </View >
             </View>
         </GestureHandlerRootView>                    
@@ -325,7 +340,12 @@ const styles = StyleSheet.create({
         backgroundColor: "#314435",
         alignItems: "center",
         justifyContent: "center",
-    }
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 })
 
 export default ClinicScreen

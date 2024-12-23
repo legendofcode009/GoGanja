@@ -1,26 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import {Ionicons, ionicons} from "@expo/vector-icons";
 import { Icon, Divider } from '@rneui/themed';
+import { getDoc, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 const ScheduleClinic = () => {
-    const navigation = useNavigation();
-    const { width, height } = Dimensions.get("window");
+    const navigation = useNavigation(); 
     const route = useRoute();
-    const clinic = route.params.clinic;
+    const clinicId = route.params.clinicId;
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedServices, setSelectedServices] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
+    const [clinic, setClinic] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchClinic = async () => {
+            try {
+                const clinicDoc = await getDoc(doc(db, 'clinics', clinicId));
+                setClinic(clinicDoc.data());
+            } catch (error) {
+                console.error("Error fetching clinic data: ", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchClinic();
+    }, [clinicId]);
 
     const handleAddService = (service) => {
         if (selectedServices.includes(service)) {
             setSelectedServices(selectedServices.filter(item => item !== service));
-            setTotalPrice(totalPrice - 50);
+            setTotalPrice(totalPrice - service.price);
         } else {
             setSelectedServices([...selectedServices, service]);
-            setTotalPrice(totalPrice + 50);
+            setTotalPrice(totalPrice + service.price);
         }
+    }
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <Text>Loading...</Text>
+            </View>
+        );
     }
 
     return (
@@ -57,14 +82,14 @@ const ScheduleClinic = () => {
                     </View>
                     <Divider orientation="vertical" />
                     {
-                        clinic.services.filter(item => item.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+                        clinic.services.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
                             <View key = {index}>
                                 <View style={[styles.bsServicerow, ]}>
                                     <View style={styles.bsServicefirst}>
-                                        <Text style={styles.bsText}> {item} :</Text>
+                                        <Text style={styles.bsText}> {item.name} :</Text>
                                     </View>
                                     <View style={styles.bsServicesecond}>
-                                        <Text style={styles.bsPricetext}>$50</Text>
+                                        <Text style={styles.bsPricetext}>${item.price}</Text>
                                     </View>
                                     {!selectedServices.includes(item) ? 
                                     <View style = {styles.bsServicethird}><Ionicons size = {32} name = {"add-circle-outline"} color = {"#DEBA5C"} onPress= {() => handleAddService(item)} /></View> : 
@@ -80,7 +105,7 @@ const ScheduleClinic = () => {
                     {/* Repeat service rows as needed */}
                 </ScrollView>
                 <View style={styles.buttonContainer}>
-                    <Pressable style = {styles.button} onPress={() => navigation.navigate("ScheduleClinic2", {clinic: clinic, selectedServices: selectedServices, totalPrice: totalPrice})}><Text style = {styles.btText}>Next</Text></Pressable>
+                    <Pressable style = {styles.button} onPress={() => navigation.navigate("ScheduleClinic2", {clinicId: clinicId, selectedServices: selectedServices, totalPrice: totalPrice})}><Text style = {styles.btText}>Next</Text></Pressable>
                 </View>
             </View>
             <Image style={styles.image} blurRadius={4} resizeMode="cover" source={require("../assets/clinicback.png")} />
