@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "goganja-react-native",
-    "slug": "goganja-react-native",
+    "name": "GoGanja",
+    "slug": "GoGanja-user-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,16 +15,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jakub992.GoGanjauserapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jakub992.GoGanjauserapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "841dbc67-236b-46b7-8307-501038553468"
+      }
     }
   }
 }

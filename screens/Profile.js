@@ -91,8 +91,11 @@ const Profile = () => {
                 quality: 1,
             });
 
-            if (!result.canceled) {
-                const uri = result.uri;
+            console.log('Image Picker Result:', result);
+
+            if (!result.canceled && result.assets && result.assets[0]) {
+                const uri = result.assets[0].uri;
+                console.log('Selected image URI:', uri);
                 setImageUri({ uri });
 
                 // Check network connectivity
@@ -123,9 +126,12 @@ const Profile = () => {
 
                     console.log('Profile image updated in Firestore');
                 } catch (error) {
-                    console.error("Error during fetch or upload: ", error);
-                    alert('Failed to upload image. Please try again.');
+                    console.error('Error fetching image URI:', error);
+                    alert('Failed to fetch image. Please try again.');
+                    return;
                 }
+            } else {
+                console.log('Image picking was canceled.');
             }
         } catch (error) {
             console.error("Error picking image: ", error);
@@ -137,8 +143,11 @@ const Profile = () => {
     const checkNetworkConnectivity = async () => {
         try {
             const response = await fetch('https://www.google.com', { method: 'HEAD' });
+            // Only log essential information to avoid the formatting error
+            console.log('Network connectivity status:', response.ok);
             return response.ok;
         } catch (error) {
+            console.error('Network connectivity check failed:', error.message);
             return false;
         }
     };
