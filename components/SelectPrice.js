@@ -1,8 +1,7 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import RangeSlider from 'rn-range-slider';
 
-// Add these custom components
 const Thumb = () => (
   <View style={styles.thumb} />
 );
@@ -25,9 +24,39 @@ const Notch = () => (
   <View style={styles.notch} />
 );
 
-const SelectPrice = ({price, setPrice}) => {
+const PriceDistribution = ({ clinics, max }) => {
+  // Create bins for every $1 interval
+  const bins = useMemo(() => {
+    const distribution = new Array(Math.ceil(max)).fill(0);
+    clinics.forEach(clinic => {
+      const binIndex = Math.floor(clinic.initialConsultFee);
+      if (binIndex < distribution.length) {
+        distribution[binIndex]++;
+      }
+    });
+    // Find maximum count for scaling
+    const maxCount = Math.max(...distribution);
+    return distribution.map(count => (count / maxCount) * 50); // Scale height to max 50
+  }, [clinics, max]);
+
+  return (
+    <View style={styles.distributionContainer}>
+      {bins.map((height, index) => (
+        <View
+          key={index}
+          style={[
+            styles.distributionBar,
+            { height: height || 0 }
+          ]}
+        />
+      ))}
+    </View>
+  );
+};
+
+const SelectPrice = ({ price, setPrice, clinics }) => {
     const [low, setLow] = useState(0);
-    const [high, setHigh] = useState(1000);
+    const [high, setHigh] = useState(50);
 
     const renderThumb = useCallback(() => <Thumb />, []);
     const renderRail = useCallback(() => <Rail />, []);
@@ -43,11 +72,12 @@ const SelectPrice = ({price, setPrice}) => {
     return (
         <>
             <Text style={styles.under}>Choose the desired price</Text>
+            <PriceDistribution clinics={clinics} max={50} />
             <RangeSlider
                 style={styles.slider}
                 min={0}
-                max={1000}
-                step={10}
+                max={50}
+                step={1}
                 floatingLabel
                 renderThumb={renderThumb}
                 renderRail={renderRail}
@@ -122,6 +152,19 @@ const styles = StyleSheet.create({
         borderColor: "#B1D5B9",
         alignItems: "center",
         justifyContent: "center",
+    },
+    distributionContainer: {
+        flexDirection: 'row',
+        height: 70,
+        alignItems: 'flex-end',
+        paddingHorizontal: 12, // Account for thumb width
+        marginBottom: 8,
+    },
+    distributionBar: {
+        flex: 1,
+        backgroundColor: '#DEBA5C',
+        marginHorizontal: 1,
+        minHeight: 1,
     },
 })
 

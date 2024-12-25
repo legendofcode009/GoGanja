@@ -3,9 +3,10 @@ import { View, Text, Pressable, Image, StyleSheet, ScrollView, ActivityIndicator
 import PageHeader from "../components/PageHeader";
 import { Divider } from "@rneui/themed";
 import { AntDesign, Entypo, Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons"
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import { db } from "../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc } from "firebase/firestore";
+import Loading from "../components/Loading";
 
 const AppointmentDetail = () => {
     const route = useRoute();
@@ -13,6 +14,7 @@ const AppointmentDetail = () => {
     const [appointment, setAppointment] = useState(null);
     const [clinic, setClinic] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();
 
     useEffect(() => {
         const fetchAppointment = async () => {
@@ -46,8 +48,35 @@ const AppointmentDetail = () => {
         fetchClinic();
     }, [appointment]);
 
+    const handleCancel = async () => {
+        try {
+            setLoading(true);
+            await deleteDoc(doc(db, 'clinics_bookings', appointmentId));
+        } catch (error) {
+            console.error("Error canceling appointment: ", error);
+        } finally {
+            setLoading(false);
+            navigation.navigate('Bookings');
+        }
+    }
+
+    const handleChange = async () => {
+        try {
+            setLoading(true);
+            await deleteDoc(doc(db, 'clinics_bookings', appointmentId));
+        } catch (error) {
+            console.error("Error changing appointment: ", error);
+        } finally {
+            setLoading(false);
+            navigation.navigate('ScheduleClinic', { clinicId: clinicId, totalPrice: appointment?.totalPrice, selectedServices: appointment?.selectedServices });
+        }
+    }
+    const handleShare = () => {
+        console.log("share");
+    }
+
     if (loading) {
-        return <ActivityIndicator style={{ marginTop: 200 }} size="large" color="#0000ff" />;
+        return <Loading />;
     }
 
     return (
@@ -82,8 +111,9 @@ const AppointmentDetail = () => {
                     <View style={styles.rowCon}>
                         <Text style={styles.smText}>Opening hours:</Text>
                         <View>
-                            <Text style={styles.smText}>Monday - Friday 8:00-20:00</Text>
-                            <Text style={styles.smText}>Saturday - Sunday 7:00-16:00</Text>
+                            {clinic?.openingHours && clinic.openingHours.short.map((hour, index) => (
+                                <Text key={index} style={styles.smText}>{hour}</Text>
+                            ))}
                         </View>
                     </View>
                 </View>
@@ -103,7 +133,7 @@ const AppointmentDetail = () => {
                     <Text style={styles.smText}>{appointment?.DoctorName}</Text>
                     <View style={styles.priceRow}>
                         <Text style={styles.smText}>Total Price</Text>
-                        <Text style={styles.titleText}>${appointment?.totalPrice}</Text>
+                        <Text style={styles.titleText}>${appointment?.totalPrice.toFixed(2)}</Text>
                     </View>
                 </View>
                 <View style={styles.contentCon2}>
@@ -114,11 +144,11 @@ const AppointmentDetail = () => {
                 <View style={styles.bottomCon}>
                     <Text style={styles.mdText}>Management of appointment</Text>
                     <View style={{ height: 16 }}></View>
-                    <View style={styles.buttonCon}><MaterialIcons size={24} color={"#DEBA5C"} name="do-not-disturb" /><Text style={styles.mdText}>Cancel appointment</Text></View>
+                    <Pressable style={styles.buttonCon} onPress={() => handleCancel()}><MaterialIcons size={24} color={"#DEBA5C"} name="do-not-disturb"  /><Text style={styles.mdText}>Cancel appointment</Text></Pressable>
                     <Divider />
-                    <View style={styles.buttonCon}><Ionicons size={24} color={"#DEBA5C"} name="sync" /><Text style={styles.mdText}>Change appointment</Text></View>
+                    <Pressable style={styles.buttonCon} onPress={() => handleChange()}><Ionicons size={24} color={"#DEBA5C"} name="sync" /><Text style={styles.mdText}>Change appointment</Text></Pressable>
                     <Divider />
-                    <View style={styles.buttonCon}><Ionicons size={24} color={"#DEBA5C"} name="share-social-outline" /><Text style={styles.mdText}>Share your appointment</Text></View>
+                    <Pressable style={styles.buttonCon} onPress={() => handleShare()}><Ionicons size={24} color={"#DEBA5C"} name="share-social-outline" /><Text style={styles.mdText}>Share your appointment</Text></Pressable>
                     <Divider />
                 </View>
             </ScrollView>
@@ -209,7 +239,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 6,
-        marginVertical: 5,
+        marginVertical: 10  ,
     },
     buttonText: {
         fontSize: 16,

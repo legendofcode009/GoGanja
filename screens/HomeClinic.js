@@ -16,11 +16,11 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import { db } from '../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import ClinicCard from "../components/ClinicCard.js";
-
+import Loading from "../components/Loading.js";
 const HomeClinic = () => {
   const navigation = useNavigation();
   const [clinics, setClinics] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchClinics();
@@ -92,7 +92,7 @@ const HomeClinic = () => {
   );
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#314435" style={styles.loadingIndicator} />;
+    return <Loading />;
   }
 
   return (

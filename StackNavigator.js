@@ -22,9 +22,9 @@ import RecipeDetail from "./screens/RecipeDetail";
 import OrderRecipe from "./screens/OrderRecipe";
 import OrderConfirmation from "./screens/OrderConfirmation";
 import PaymentFailed from "./screens/PaymentFailed";
+import MessageScreen from "./screens/MessageScreen";
 
-
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator(); 
 const Stack = createNativeStackNavigator();
 
 function BottomTabs() {
@@ -77,7 +77,7 @@ function BottomTabs() {
       />
       <Tab.Screen
         name="Message"
-        component={BookingScreen}
+        component={MessageScreen}
         options={{
           tabBarLabel: "Message",
           headerShown: false,

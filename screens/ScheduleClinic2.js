@@ -8,11 +8,13 @@ const ScheduleClinic2 = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [hour, setHour] = useState('12'); // Default hour
     const [minute, setMinute] = useState('00'); // Default minute
+    const [period, setPeriod] = useState('AM'); // Add AM/PM state
     const route = useRoute();
     const clinicId = route.params.clinicId;
     const selectedServices = route.params.selectedServices;
     const totalPrice = route.params.totalPrice;
-
+    const [loading, setLoading] = useState(false);
+    
     const handleDayPress = (day) => {
         const pressedDate = new Date(day.dateString + 'T12:00:00');
         if (selectedDate && pressedDate.toISOString().split('T')[0] === selectedDate.toISOString().split('T')[0]) {
@@ -50,23 +52,67 @@ const ScheduleClinic2 = () => {
     const hourAnim = useRef(new Animated.Value(0)).current;
     const minuteAnim = useRef(new Animated.Value(0)).current;
 
-    const createPanResponder = (setValue, maxValue, animValue) => {
+    const formatTimeValue = (value, maxValue) => {
+        const numValue = parseInt(value) || 0;
+        return String(((numValue % maxValue) + maxValue) % maxValue).padStart(2, '0');
+    };
+
+    const adjustHourFor12HourFormat = (hour24) => {
+        const hour12 = hour24 % 12;
+        return hour12 === 0 ? '12' : String(hour12);
+    };
+
+    const createPanResponder = (setValue, maxValue, animValue, isHour = false) => {
+        let accumulatedDelta = 0;
+        const threshold = 10; // Adjust this value to change sensitivity
+
         return PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
             onMoveShouldSetPanResponder: () => true,
             onPanResponderMove: (evt, gestureState) => {
-                const change = -gestureState.dy / 10; // Directly map swipe distance to change
+                accumulatedDelta += gestureState.dy;
+                
+                if (Math.abs(accumulatedDelta) > threshold) {
+                    const change = Math.sign(accumulatedDelta) * -1;
+                    accumulatedDelta = 0;
 
-                animValue.setValue(change); // Update animation value based on swipe
+                    setValue((prev) => {
+                        let newValue;
+                        if (isHour) {
+                            newValue = parseInt(prev);
+                            newValue = ((newValue + change - 1 + 12) % 12) + 1;
+                            
+                            if (change !== 0 && newValue === 12) {
+                                setPeriod(current => current === 'AM' ? 'PM' : 'AM');
+                            }
+                        } else {
+                            newValue = (parseInt(prev) + change + 60) % 60;
+                        }
+                        return formatTimeValue(newValue, isHour ? 12 : 60);
+                    });
 
-                setValue((prev) => {
-                    const newValue = (parseInt(prev) + change + maxValue) % maxValue;
-                    return Math.round(newValue); // Ensure the value is an integer
-                });
+                    // Animate the transition
+                    Animated.sequence([
+                        Animated.timing(animValue, {
+                            toValue: change,
+                            duration: 100,
+                            useNativeDriver: true,
+                        }),
+                        Animated.spring(animValue, {
+                            toValue: 0,
+                            tension: 80,
+                            friction: 10,
+                            useNativeDriver: true,
+                        })
+                    ]).start();
+                }
             },
             onPanResponderRelease: () => {
-                Animated.timing(animValue, {
+                accumulatedDelta = 0;
+                Animated.spring(animValue, {
                     toValue: 0,
-                    duration: 150,
+                    tension: 80,
+                    friction: 10,
                     useNativeDriver: true,
                 }).start();
             },
@@ -76,17 +122,42 @@ const ScheduleClinic2 = () => {
     const renderAnimatedNumber = (value, animValue) => {
         const translateY = animValue.interpolate({
             inputRange: [-1, 0, 1],
-            outputRange: [-50, 0, 50], // Adjust these values to control the animation distance
+            outputRange: [20, 0, -20], // Reduced movement distance for smoother feel
         });
 
+        const opacity = animValue.interpolate({
+            inputRange: [-1, -0.5, 0, 0.5, 1],
+            outputRange: [0.3, 1, 1, 1, 0.3], // Fade effect during transition
+        });
+
+        // Show previous, current, and next numbers
+        const prevNumber = formatTimeValue(parseInt(value) - 1, value === 'hour' ? 12 : 60);
+        const nextNumber = formatTimeValue(parseInt(value) + 1, value === 'hour' ? 12 : 60);
+
         return (
-            <Animated.Text style={[styles.timeText, { transform: [{ translateY }] }]}>
-                {value}
-            </Animated.Text>
+            <View style={styles.timePickerNumbers}>
+                <Animated.Text style={[styles.timeText, { opacity: 0.3 }]}>
+                    {prevNumber}
+                </Animated.Text>
+                <Animated.Text 
+                    style={[
+                        styles.timeText, 
+                        { 
+                            transform: [{ translateY }],
+                            opacity
+                        }
+                    ]}
+                >
+                    {value}
+                </Animated.Text>
+                <Animated.Text style={[styles.timeText, { opacity: 0.3 }]}>
+                    {nextNumber}
+                </Animated.Text>
+            </View>
         );
     };
 
-    const hourPanResponder = createPanResponder(setHour, 24, hourAnim);
+    const hourPanResponder = createPanResponder(setHour, 24, hourAnim, true);
     const minutePanResponder = createPanResponder(setMinute, 60, minuteAnim);
 
     return (
@@ -113,18 +184,23 @@ const ScheduleClinic2 = () => {
                 />
 
                 <View style={styles.inputContainer}>
-                <View style={styles.timePicker} {...hourPanResponder.panHandlers}>
-                    {renderAnimatedNumber(hour, hourAnim)}
+                    <View style={styles.timePicker} {...hourPanResponder.panHandlers}>
+                        {renderAnimatedNumber(hour, hourAnim)}
                     </View>
                     <Text style={styles.separator}>:</Text>
                     <View style={styles.timePicker} {...minutePanResponder.panHandlers}>
-                        {renderAnimatedNumber(minute, minuteAnim)}
+                        {renderAnimatedNumber(minute.padStart(2, '0'), minuteAnim)}
                     </View>
+                    <Pressable 
+                        style={styles.periodSelector} 
+                        onPress={() => setPeriod(current => current === 'AM' ? 'PM' : 'AM')}>
+                        <Text style={styles.periodText}>{period}</Text>
+                    </Pressable>
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <Pressable style={styles.button} onPress={() => navigation.navigate("ScheduleClinic", {clinicId: clinicId})}>
-                        <Text style={styles.btText}>Total: ${totalPrice}</Text>
+                    <Pressable style={styles.button} onPress={() => navigation.navigate("ScheduleClinic", {clinicId: clinicId, selectedServices: selectedServices, totalPrice: totalPrice})}>
+                        <Text style={styles.btText}>Total: ${totalPrice.toFixed(2)}</Text>
                     </Pressable>
                     <Pressable style={styles.button} onPress={handleNext}>
                         <Text style={styles.btText}>Next</Text>
@@ -186,19 +262,19 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
     },
     timePicker: {
-        height: 50,
+        height: 60,
         width: 60,
         borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 5,
-        paddingHorizontal: 10,
-        fontSize: 18,
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
+        overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     timeText: {
         fontSize: 32,
+        lineHeight: 40,
+        fontWeight: '500',
     },
     buttonContainer: {
         alignItems: 'center',
@@ -219,7 +295,25 @@ const styles = StyleSheet.create({
         color: "#fafafa",
         fontSize: 16,
         fontWeight: "500",
-    }
+    },
+    periodSelector: {
+        marginLeft: 10,
+        padding: 10,
+        backgroundColor: '#314435',
+        borderRadius: 5,
+        minWidth: 50,
+        alignItems: 'center',
+    },
+    periodText: {
+        color: '#fafafa',
+        fontSize: 18,
+        fontWeight: '500',
+    },
+    timePickerNumbers: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 120, // Increased height to show previous/next numbers
+    },
 });
 
 export default ScheduleClinic2;

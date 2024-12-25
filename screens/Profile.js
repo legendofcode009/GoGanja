@@ -1,4 +1,4 @@
-import { Pressable, Text, View, StyleSheet, Image, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Pressable, Text, View, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -7,12 +7,13 @@ import { auth } from "../firebaseConfig";
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
+import Loading from "../components/Loading";
 
 const Profile = () => {
-    const [email,setEmail] = useState("");
+    const [email, setEmail] = useState("");
     const [name, setName] = useState("");
-    const [password,setPassword] = useState("");
-    const [phoneNumber,setPhoneNumber] = useState("");
+    const [password, setPassword] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [city, setCity] = useState("");
     const [imageUri, setImageUri] = useState(require("../assets/download.png"));
     const navigation = useNavigation();
@@ -21,7 +22,7 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try { 
+            try {
                 const user = auth.currentUser;
                 if (user) {
                     setEmail(user.email);
@@ -33,7 +34,7 @@ const Profile = () => {
                 setLoading(false); // Ensure loading is set to false after data fetching
             }
         };
- 
+
         fetchData();
     }, []);
 
@@ -45,7 +46,7 @@ const Profile = () => {
             const data = docSnap.data();
             if (data.profileImage) {
                 setImageUri({ uri: data.profileImage });
-            }                   
+            }
             if (data.name) {
                 setName(data.name);
             }
@@ -70,12 +71,12 @@ const Profile = () => {
     };
 
     const pressEnglish = () => {
-        if(!isEnglish) setIsEnglish(true);
+        if (!isEnglish) setIsEnglish(true);
     };
 
     const pressThai = () => {
-        if(isEnglish) setIsEnglish(false);
-    }; 
+        if (isEnglish) setIsEnglish(false);
+    };
 
     const pickImage = async () => {
         try {
@@ -108,7 +109,7 @@ const Profile = () => {
                 // Upload image to Firebase Storage
                 const storage = getStorage();
                 const storageRef = ref(storage, `profileImages/${auth.currentUser.uid}`);
-                
+
                 try {
                     const response = await fetch(uri);
                     const blob = await response.blob();
@@ -153,92 +154,93 @@ const Profile = () => {
     };
 
     if (loading) {
-        return <ActivityIndicator size="large" color="#314435" style={styles.loadingIndicator} />;
+        return <Loading />;
     }
 
 
-    return(
-        // loading ? <ActivityIndicator size="large" color="#314435" style={styles.loadingIndicator} /> :
+    return (
         <>
-            <View style = {styles.headerContainer}>
-                <Ionicons name = "notifications-outline" style = {styles.headerIconleft} size = {24} />
+            <View style={styles.headerContainer}>
+                <Ionicons name="notifications-outline" style={styles.headerIconleft} size={24} />
                 <Text style={styles.headerText}>Profile</Text>
-                <Ionicons name = "log-out-outline" style = {styles.headerIcon} size = {24} onPress={handleLogout} />
+                <Ionicons name="log-out-outline" style={styles.headerIcon} size={24} onPress={handleLogout} />
             </View>
-            <View style = {styles.container}>
-                <Pressable style = {styles.imageContainer} onPress={pickImage}>
-                    <Image style = {styles.image} source = {imageUri} />
+            <View style={styles.container}>
+                <Pressable style={styles.imageContainer} onPress={pickImage}>
+                    <Image style={styles.image} source={imageUri} />
                 </Pressable>
-                <Text style = {styles.headText}>{name}</Text>
-                <Text style = {styles.editText}>Edit Profile</Text>
-                <View style = {styles.rowContainer}>
-                    <Text style = {styles.subheadText}>Personal Information</Text>
-                </View>
-                <View style={styles.inputcontainer}>
-                    <TextInput
-                        value={email}
-                        editable={false}
-                        onChangeText={(text) => setEmail(text)}
-                        placeholder="Email"
-                        placeholderTextColor={"#808080"}
-                        style={ styles.textinput }
-                    />
-                    <TextInput
-                        value={phoneNumber}
-                        onChangeText={(text) => setPhoneNumber(text)}
-                        placeholder="Phone Number"
-                        placeholderTextColor={"#808080"}
-                        style={ styles.textinput }
-                    />
-                    <TextInput
-                        value={city}
-                        onChangeText={(text) => setCity(text)}
-                        placeholder="City"
-                        placeholderTextColor={"#808080"}
-                        style={ styles.textinput }
-                    />
-                </View>
-                <View style = {styles.rowContainer}>
-                    <Text style = {styles.subheadText}>Language</Text>
-                </View>
-                <View style={styles.switchContainer}>
-                    <TouchableOpacity 
-                        style={[styles.switch, isEnglish ? styles.active : styles.inactive]} 
-                        onPress={pressEnglish}
-                    >
-                        <Text style={[styles.switchText, isEnglish ? styles.activeSwitchText : styles.inactiveSwitchText]}>
-                            English
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={[styles.switch, !isEnglish ? styles.active : styles.inactive]} 
-                        onPress={pressThai}
-                    >
-                        <Text style={[styles.switchText, !isEnglish ? styles.activeSwitchText : styles.inactiveSwitchText]}>
-                            Thai
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-                <View style = {styles.rowContainer}>
-                    <Text style = {styles.subheadText}>Change Password</Text>
-                </View>
-                <View style={styles.inputcontainer}>
-                    <TextInput
-                        placeholder="Current Password"
-                        placeholderTextColor={"#808080"}
-                        style={ styles.textinput }
-                    />
-                    <TextInput
-                        placeholder="New Password"
-                        placeholderTextColor={"#808080"}
-                        style={ styles.textinput }
-                    />
-                    <TextInput
-                        placeholder="Confirm Password"
-                        placeholderTextColor={"#808080"}
-                        style={ styles.textinput }
-                    />
-                </View>
+                <Text style={styles.headText}>{name}</Text>
+                <Text style={styles.editText}>Edit Profile</Text>
+                <ScrollView style = {{flex: 1, width: "100%"}}>
+                    <View style={styles.rowContainer}>
+                        <Text style={styles.subheadText}>Personal Information</Text>
+                    </View>
+                    <View style={styles.inputcontainer}>
+                        <TextInput
+                            value={email}
+                            editable={false}
+                            onChangeText={(text) => setEmail(text)}
+                            placeholder="Email"
+                            placeholderTextColor={"#808080"}
+                            style={styles.textinput}
+                        />
+                        <TextInput
+                            value={phoneNumber}
+                            onChangeText={(text) => setPhoneNumber(text)}
+                            placeholder="Phone Number"
+                            placeholderTextColor={"#808080"}
+                            style={styles.textinput}
+                        />
+                        <TextInput
+                            value={city}
+                            onChangeText={(text) => setCity(text)}
+                            placeholder="City"
+                            placeholderTextColor={"#808080"}
+                            style={styles.textinput}
+                        />
+                    </View>
+                    <View style={styles.rowContainer}>
+                        <Text style={styles.subheadText}>Language</Text>
+                    </View>
+                    <View style={styles.switchContainer}>
+                        <TouchableOpacity
+                            style={[styles.switch, isEnglish ? styles.active : styles.inactive]}
+                            onPress={pressEnglish}
+                        >
+                            <Text style={[styles.switchText, isEnglish ? styles.activeSwitchText : styles.inactiveSwitchText]}>
+                                English
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.switch, !isEnglish ? styles.active : styles.inactive]}
+                            onPress={pressThai}
+                        >
+                            <Text style={[styles.switchText, !isEnglish ? styles.activeSwitchText : styles.inactiveSwitchText]}>
+                                Thai
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.rowContainer}>
+                        <Text style={styles.subheadText}>Change Password</Text>
+                    </View>
+                    <View style={styles.inputcontainer}>
+                        <TextInput
+                            placeholder="Current Password"
+                            placeholderTextColor={"#808080"}
+                            style={styles.textinput}
+                        />
+                        <TextInput
+                            placeholder="New Password"
+                            placeholderTextColor={"#808080"}
+                            style={styles.textinput}
+                        />
+                        <TextInput
+                            placeholder="Confirm Password"
+                            placeholderTextColor={"#808080"}
+                            style={styles.textinput}
+                        />
+                    </View>
+                </ScrollView>
             </View>
         </>
     )
@@ -251,23 +253,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerContainer: {
-        height:100, 
+        height: 100,
         justifyContent: "flex",
         alignItems: "center",
         backgroundColor: "#FAFAFA",
         flexDirection: "column-reverse"
     },
     headerText: {
-      fontSize: 20,
-      fontWeight: "600",
+        fontSize: 20,
+        fontWeight: "600",
     },
     headerIconleft: {
         position: "absolute",
-        left:30,
+        left: 30,
     },
     headerIcon: {
-      position: "absolute",
-      right:30,
+        position: "absolute",
+        right: 30,
     },
     container: {
         flex: 1,
@@ -276,17 +278,17 @@ const styles = StyleSheet.create({
         padding: 24,
         backgroundColor: "#fafafa"
     },
-    imageContainer:{
+    imageContainer: {
         height: 80,
         width: 80,
         borderRadius: 40,
         overflow: "hidden"
     },
     image: {
-        width:"100%",
+        width: "100%",
         height: "100%", // Set a height for the image
         resizeMode: 'cover', // Optional: adjust how the image resizes
-      },
+    },
     headText: {
         fontSize: 20,
         fontWeight: "600",
@@ -316,7 +318,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#B1D5B9",
         paddingHorizontal: 24,
-      },
+    },
     switchContainer: {
         flexDirection: 'row',
         borderRadius: 24,

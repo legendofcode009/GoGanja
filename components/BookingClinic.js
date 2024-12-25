@@ -5,6 +5,7 @@ import {
   FlatList,
   Text,
   View,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
@@ -14,17 +15,19 @@ import { db } from "../firebaseConfig";
 import AppointmentCard from "./AppointmentCard.js";
 import RecipeCard from "./RecipeCard.js";
 import { auth } from "../firebaseConfig";
+import Loading from "./Loading.js";
 
 const BookingClinic = () => {
   const navigation = useNavigation();
-  const [appointment, setAppointment] = useState(true);
+  const [appointmentTab, setAppointmentTab] = useState(true);
   const [activeDropdownId, setActiveDropdownId] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [clinics, setClinics] = useState([]);
 
-  useEffect(() => {
+  useFocusEffect(
+    React.useCallback(() => {
     const fetchBookings = async () => {
       setLoading(true); // Start loading
       try {
@@ -42,7 +45,8 @@ const BookingClinic = () => {
       }
     };
     fetchBookings();
-  }, []);
+    }, [])
+  );
 
   useFocusEffect(
     React.useCallback(() => {
@@ -102,8 +106,12 @@ const BookingClinic = () => {
     />
   );
 
+  const removeBooking = (appointmentId) => {
+    setBookings((prevBookings) => prevBookings.filter(booking => booking.id !== appointmentId));
+  };
+
   if (loading) {
-    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Loading...</Text></View>;
+    return <Loading />
   }
 
   return (
@@ -116,16 +124,16 @@ const BookingClinic = () => {
           />
         )}
         <View style={styles.switchContainer}>
-          <Pressable style={appointment ? styles.activeSwitch : styles.switch} onPress={() => { setAppointment(true) }} ><Text style={appointment ? styles.activeSwitchText : styles.switchText}>Appointment</Text></Pressable>
-          <Pressable style={appointment ? styles.switch : styles.activeSwitch} onPress={() => { setAppointment(false) }}><Text style={appointment ? styles.switchText : styles.activeSwitchText}>Recipes</Text></Pressable>
+          <Pressable style={appointmentTab ? styles.activeSwitch : styles.switch} onPress={() => { setAppointmentTab(true) }} ><Text style={appointmentTab ? styles.activeSwitchText : styles.switchText}>Appointment</Text></Pressable>
+          <Pressable style={appointmentTab ? styles.switch : styles.activeSwitch} onPress={() => { setAppointmentTab(false) }}><Text style={appointmentTab ? styles.switchText : styles.activeSwitchText}>Recipes</Text></Pressable>
         </View>
         {
-          appointment ?
+          appointmentTab ?
           <FlatList
             data={bookings}
             renderItem={renderAppointmentItem}
             keyExtractor={item => item.id}
-            contentContainerStyle={{ paddingBottom: 70 }}
+            style={{ flex: 1, paddingVertical: 5 }}
           /> :
           <FlatList
               data={recipes} // Dummy data for recipes
@@ -134,10 +142,17 @@ const BookingClinic = () => {
               ListHeaderComponent={() => (
                 <Pressable style={styles.newPress} onPress={() => navigation.navigate("OrderRecipe")}><Text style={styles.newText}>Order a recipe</Text></Pressable>
               )}
-              contentContainerStyle={{ paddingBottom: 70 }}
+              style={{ flex: 1, paddingVertical: 30 }}
             />  
         }
-
+        {activeDropdownId !== null && (
+          <TouchableWithoutFeedback onPress={() => setActiveDropdownId(null)}>
+            <View style={styles.dropdownContainer}>
+              {/* Render the dropdown here */}
+              {/* Ensure dropdown items are interactive */}
+            </View>
+          </TouchableWithoutFeedback>
+        )}
       </View>
 
     </>
@@ -159,7 +174,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'transparent',
-    zIndex: 998,
+    zIndex: 10,
   },
   switchContainer: {
     marginTop: 24,

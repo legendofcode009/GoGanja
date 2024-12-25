@@ -7,6 +7,7 @@ import PageHeader from "../components/PageHeader";
 import { db } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { auth } from "../firebaseConfig";
+import Loading from "../components/Loading";
 
 const OrderConfirmation = () => {
     const navigation = useNavigation();
@@ -81,7 +82,7 @@ const OrderConfirmation = () => {
     }
 
     if (loading) {
-        return <ActivityIndicator style = {{flex: 1, justifyContent: "center", alignItems: "center"}} size="large" color="#0000ff" />;
+        return <Loading />;
     }
 
     return (

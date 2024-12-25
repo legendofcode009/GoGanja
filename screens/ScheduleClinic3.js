@@ -41,7 +41,7 @@ const ScheduleClinic3 = () => {
         .then(() => {
             setLoading(false);
             Alert.alert("Success", "Your appointment has been booked!");
-            navigation.navigate("Main");
+            navigation.navigate("Home");
         })
         .catch((error) => {
             setLoading(false);
@@ -87,7 +87,7 @@ const ScheduleClinic3 = () => {
                                             <Text style={styles.bsText}>{item.name} :</Text>
                                         </View>
                                         <View style={styles.bsServiceright}>
-                                            <Text style={styles.bsPricetext}>${item.price}</Text>
+                                            <Text style={styles.bsPricetext}>${item.price.toFixed(2)}</Text>
                                         </View>
                                     </View>
                                     <Divider orientation="vertical" />
@@ -96,9 +96,9 @@ const ScheduleClinic3 = () => {
                             ))
                         }
 
-                        <Pressable style = {styles.totalButton} onPress={() => navigation.navigate("ScheduleClinic", {clinic: clinic, selectedServices: selectedServices})}>
+                        <Pressable style = {styles.totalButton} onPress={() => navigation.navigate("ScheduleClinic", {clinicId: clinicId, selectedServices: selectedServices, totalPrice: totalPrice})}>
                             <Text style={styles.bsText}>Total Price :</Text>
-                            <Text style={styles.bsPricetext}>${totalPrice}</Text>
+                            <Text style={styles.bsPricetext}>${totalPrice.toFixed(2)}</Text>
                         </Pressable>
                         
                         <View style ={{width: "100%", alignItems: "center"}}>
@@ -130,9 +130,7 @@ const ScheduleClinic3 = () => {
                             />
                         </KeyboardAvoidingView>
 
-                        {loading && (
-                            <ActivityIndicator size="large" color="#314435" style={{ marginVertical: 20 }} />
-                        )}
+                        
 
                         <Text style={styles.bsSubheader}>Payment Method</Text>
                         <View style = {styles.paycontainer}>
@@ -144,7 +142,13 @@ const ScheduleClinic3 = () => {
                             <View style = {styles.bsServiceleft}><Text style = {styles.bsSubheader}>Credit Card</Text><Text style = {styles.bsSubheader}>**** **** **** 6542</Text></View>
                         </View>
                         <View style={styles.buttonContainer}>
-                            <Pressable style = {styles.button} onPress={handleComplete} disabled={loading}><Text style = {styles.btText}>Complete</Text></Pressable>
+                            <Pressable style = {styles.button} onPress={handleComplete} disabled={loading}>
+                                {loading ? (
+                                    <ActivityIndicator size="large" color="#fafafa"/>
+                                ) : (
+                                    <Text style = {styles.btText}>Complete</Text>
+                                )}
+                            </Pressable>
                         </View>
                         <View style = {{height: 100,}}></View>
                         {/* Repeat service rows as needed */}

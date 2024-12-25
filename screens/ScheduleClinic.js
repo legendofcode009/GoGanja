@@ -5,22 +5,27 @@ import {Ionicons, ionicons} from "@expo/vector-icons";
 import { Icon, Divider } from '@rneui/themed';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-
+import Loading from "../components/Loading.js";
 const ScheduleClinic = () => {
     const navigation = useNavigation(); 
     const route = useRoute();
     const clinicId = route.params.clinicId;
+    const services = route.params.selectedServices;
+    const price = route.params.totalPrice;
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedServices, setSelectedServices] = useState([]);
-    const [totalPrice, setTotalPrice] = useState(0);
+    const [selectedServices, setSelectedServices] = useState(services);
+    const [totalPrice, setTotalPrice] = useState(price);
     const [clinic, setClinic] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchClinic = async () => {
             try {
+                console.log(services);
                 const clinicDoc = await getDoc(doc(db, 'clinics', clinicId));
                 setClinic(clinicDoc.data());
+                setSelectedServices(services);
+                setTotalPrice(price);
             } catch (error) {
                 console.error("Error fetching clinic data: ", error);
             } finally {
@@ -41,11 +46,7 @@ const ScheduleClinic = () => {
     }
 
     if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <Text>Loading...</Text>
-            </View>
-        );
+        return <Loading />;
     }
 
     return (
@@ -71,7 +72,7 @@ const ScheduleClinic = () => {
                     />
                 </View>
                 <ScrollView style={styles.bsServicecontainer}>
-                    <Text style={styles.bsSubheader}>Chosen services</Text>
+                    <Text style={styles.bsSubheader}>Select services</Text>
                     <View style={[styles.bsServicerow, { marginBottom: 5 }]}>
                         <View style={styles.bsServiceleft}>
                             <Text style={styles.bsSmtext}>Name of the service</Text>
@@ -87,7 +88,7 @@ const ScheduleClinic = () => {
                                 <View style={[styles.bsServicerow, ]}>
                                     <View style={styles.bsServicefirst}>
                                         <Text style={styles.bsText}> {item.name} :</Text>
-                                    </View>
+                                    </View> 
                                     <View style={styles.bsServicesecond}>
                                         <Text style={styles.bsPricetext}>${item.price}</Text>
                                     </View>

@@ -6,6 +6,7 @@ import { Icon, Divider } from '@rneui/themed';
 import PageHeader from "../components/PageHeader";
 import { db } from "../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
+import Loading from "../components/Loading";
 
 const OrderRecipe = () => {
     const navigation = useNavigation();
@@ -48,7 +49,7 @@ const OrderRecipe = () => {
     }
 
     if (loading) {
-        return <ActivityIndicator style={{flex: 1, justifyContent: "center", alignItems: "center"}} size="large" color="#0000ff" />;
+        return <Loading />
     }
 
     return (

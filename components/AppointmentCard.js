@@ -12,23 +12,23 @@ const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment, clinic }
   const navigation = useNavigation();
 
   const handleOptionPress = (action) => {
-    switch (action) {
-      case 'cancel':
-        // Handle cancel logic
-        break;
-      case 'change':
+      switch (action) {
+        case 'cancel':
+          removeBooking(appointment.id);
+          break;
+        case 'change':
         // Handle change logic
-        break;
-      case 'share':
+          break;
+        case 'share':
         // Handle share logic
-        break;
-    }
+          break;
+      }
     toggleDropdown(false);
   };
 
 
   return (
-    <View style={styles.card}>
+    <View style={styles.card}>{console.log(appointment.selectedServices)}
       <Pressable style={styles.headContainer} onPress={() => navigation.navigate("AppointmentDetail", { appointmentId: appointment.id, clinicId: clinic.id })}>
         <Text style={styles.headText}>Name Procedure</Text>
         <Text style={styles.timeText}>{appointment?.id ? new Date(appointment.createdAt).toLocaleDateString('en-GB', {
@@ -56,7 +56,7 @@ const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment, clinic }
           hour: '2-digit',
           minute: '2-digit'
         }).replace(',', ' -') : ''}
-        </Text>
+          </Text>
           <Text style={styles.smText}>{appointment?.totalPrice}</Text>
         </View>
         <TouchableOpacity
@@ -89,50 +89,18 @@ const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment, clinic }
         )}
       </View>
       <Divider />
-      <View style={styles.agianContainer}>
-        <Text style={styles.againText}><Ionicons size={24} color={"#DEBA5C"} name="sync" />   Make an appointment again</Text>
+      <View style={styles.againContainer}>
+        <Text style={styles.againText}>
+          <Ionicons size={24} color={"#DEBA5C"} name="sync" /> Make an
+          appointment again
+        </Text>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'transparent',
-    zIndex: 999,
-  },
 
-  dropdown: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 8,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    zIndex: 1000,
-  },
-  threeDot: {
-    position: "absolute",
-    right: 20,
-    top: 8,
-    zIndex: 1000, // Add this
-  },
-  dropdownItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
   card: {
     borderRadius: 24,
     backgroundColor: "#fafafa",
@@ -141,7 +109,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   headContainer: {
-    padding: 8,
+    padding: 15,
     gap: 8,
     borderWidth: 0,
   },
@@ -158,6 +126,7 @@ const styles = StyleSheet.create({
     height: 113,
     paddingVertical: 12,
     paddingHorizontal: 8,
+    position: "relative",
   },
   imageContainer: {
     width: 80,
@@ -167,8 +136,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: "100%", // Set a height for the image
-    resizeMode: 'cover', // Optional: adjust how the image resizes
+    height: "100%",
+    resizeMode: 'cover',
   },
   contentContainer: {
     marginLeft: 16,
@@ -181,15 +150,38 @@ const styles = StyleSheet.create({
   smText: {
     fontSize: 14,
   },
-  agianContainer: {
-    height: 43,
+  threeDot: {
+    position: "absolute",
+    right: 20,
+    top: 8,
+    zIndex: 1000,
+  },
+  dropdown: {
+    position: "absolute",
+    right: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
     padding: 8,
-    alignItems: "center"
+    top: 8,
+    zIndex: 3000,
+  },
+  dropdownItem: {
+    padding: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  againContainer: {
+    alignItems: "center",
+    padding: 8,
+    justifyContent: "center",
   },
   againText: {
     fontSize: 16,
     color: "#DEBA5C",
   }
-});
+
+})
 
 export default AppointmentCard;

@@ -7,16 +7,19 @@ import ReviewCard from '../components/ReviewCard';
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import Loading from "../components/Loading.js";
+import { Rating } from 'react-native-ratings';
 
 const ClinicScreen = () => {
     const Navigation = useNavigation();
     const route = useRoute();
-    const clinicId = route.params?.clinic;
+    const clinicId = route.params?.clinicId;
     const width = Dimensions.get('window').width;
     const [clinic, setClinic] = useState(null);
     const [showAllServices, setShowAllServices] = useState(false);
     const maxVisibleServices = 4;
     const [loading, setLoading] = useState(true);
+    const ratingimage = require("../assets/star.png");
 
     useEffect(() => {
         const fetchClinic = async () => {
@@ -37,7 +40,7 @@ const ClinicScreen = () => {
     if (loading) {
         return ( 
             <View style={styles.loadingContainer}>
-                <Text>Loading...</Text>
+                <Loading />
             </View>
         );
     }
@@ -90,8 +93,7 @@ const ClinicScreen = () => {
                         <View style={styles.ratecontainer} >
                             <View style={styles.ratesub}>
                                 <Text style={styles.ratingtext}>{clinic.rating}</Text>
-                                {/* <Rating type='custom' ratingImage={ratingimage} imageSize={18}  startingValue={5} fractions = {1} backgroundColor = {"White"} readonly /> */}
-                                <Text style={styles.rating}>⭐ ⭐ ⭐ ⭐ ⭐</Text>
+                                <Rating type='star' startingValue={clinic.rating} fractions={1} imageSize={22} style={{ justifyContent: "space-between" }} readonly/>
                             </View>
                             <Divider orientation="vertical" />
                             <View style={styles.ratesub}>
@@ -102,9 +104,9 @@ const ClinicScreen = () => {
                         <View >
                             <Text style={styles.header}>Welcome to {clinic.name}!</Text>
                             <Text style={[styles.smalltext, { marginTop: 8, marginBottom: 16 }]}>We specialize in cannabis treatment and strive to provide the best medical services to our patients.</Text>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>At the {clinic.name } clinic, we believe in the power of cannabis as a healing agent. Our doctors and specialists have many years of experience in this field.</Text></View>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>We are licensed under regulation [name of regulator] and adhere to all safety standards.</Text></View>
-                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>The clinic was founded in [year] and since then has successfully helped thousands of patients.</Text></View>
+                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>At the {clinic.name }, we believe in the power of cannabis as a healing agent. Our doctors and specialists have many years of experience in this field.</Text></View>
+                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>We are licensed under regulation and adhere to all safety standards.</Text></View>
+                            <View style={styles.bullet}><Icon name='dot-single' type="entypo" /><Text style={styles.maintext}>The clinic was founded in 2016 and since then has successfully helped thousands of patients.</Text></View>
                         </View>
                         <Divider style={styles.divider} orientation="horizontal" />
                         <View>
@@ -144,9 +146,9 @@ const ClinicScreen = () => {
                         <Divider style={styles.divider} orientation="horizontal" />
                         <View>
                             <Text style={[styles.header, {marginBottom: 8}]}>Our opening hours</Text>
-                            <View style={styles.bullet}><Text style={styles.maintext}>Monday - Friday: 9:00 - 18:00</Text></View>
-                            <View style={styles.bullet}><Text style={styles.maintext}>Saturday: 10:00 - 16:00</Text></View>
-                            <View style={styles.bullet}><Text style={styles.maintext}>Sunday: Closed</Text></View>
+                            {clinic.openingHours.short.map((hour, index) => (
+                                <View style={styles.bullet} key={index}><Text style={styles.maintext}>{hour}</Text></View>
+                            ))  }
                         </View>
                          
                         <Divider style={styles.divider} orientation="horizontal" />
@@ -174,7 +176,7 @@ const ClinicScreen = () => {
 
                 </ScrollView>
                 <View  style={styles.buttoncontainer}>
-                    <Pressable style={styles.button} onPress={() => Navigation.navigate("ScheduleClinic", {clinicId: clinic.id}) } ><Text style={{color: "#fafafa", fontSize:16,}}>Appointment</Text></Pressable>
+                    <Pressable style={styles.button} onPress={() => Navigation.navigate("ScheduleClinic", {clinicId: clinicId, totalPrice: 0, selectedServices: []}) } ><Text style={{color: "#fafafa", fontSize:16,}}>Appointment</Text></Pressable>
                 </View >
             </View>
         </GestureHandlerRootView>                    
@@ -233,7 +235,6 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 0.5,
-        borderWidth: 1,
         borderColor: "#dadada"
     },
     ratesub: {

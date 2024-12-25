@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import SelectPrice from '../components/SelectPrice';
@@ -10,6 +10,7 @@ import SelectService from '../components/SelectService.js';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import Loading from '../components/Loading.js';
 
 const FilterScreen = () => {
     const navigation = useNavigation();
@@ -19,15 +20,26 @@ const FilterScreen = () => {
     const [condition, setCondition] = useState(["Any direction"]);
     const [selectedServices, setSelectedServices] = useState(["Any Service"]);
     const [activeSections, setActiveSections] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [clinics, setClinics] = useState([]);
+    const [resetKey, setResetKey] = useState(0);
 
-    const filterClinics = async () => {
-        const clinicCollection = collection(db, 'clinics');
-        const clinicSnapshot = await getDocs(clinicCollection);
-        const clinicList = clinicSnapshot.docs.map(doc => ({
+    useEffect(() => {
+        const fetchClinics = async () => {
+            const clinicCollection = collection(db, 'clinics');
+            const clinicSnapshot = await getDocs(clinicCollection);
+            const clinicList = clinicSnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data()
-        }));
-        const filteredClinics = clinicList.filter(clinic => {
+            }));
+            setClinics(clinicList);
+        };
+        fetchClinics();
+    }, []);
+
+    const filterClinics = async () => {
+        setLoading(true);
+        const filteredClinics = clinics.filter(clinic => {
             return clinic.initialConsultFee >= price.low && clinic.initialConsultFee <= price.high 
             && (clinic.city === location || location === "Any Location") 
             && (clinic.treatments.some(tret => condition.includes(tret)) || condition.includes("Any direction"))
@@ -36,14 +48,15 @@ const FilterScreen = () => {
         });
         //console.log(filteredClinics);
         navigation.navigate("Search", { results: filteredClinics });
+        setLoading(false);
     };
 
     const sections = [
-        { title: 'Price', content: <SelectPrice price={price} setPrice={setPrice} /> },
-        { title: 'Location', content: <SelectLocation location={location} setLocation={setLocation} /> },
-        { title: 'Date', content: <SelectDate selectedDate={selectedDate} setSelectedDate={setSelectedDate} /> },
-        { title: 'Condition', content: <SelectCondition activeSection={condition} setActiveSection={setCondition} />  },
-        { title: 'Services', content: <SelectService selectedServices={selectedServices} setSelectedServices={setSelectedServices} />  },
+        { title: 'Price', content: <SelectPrice key={`price-${resetKey}`} price={price} setPrice={setPrice} clinics={clinics} /> },
+        { title: 'Location', content: <SelectLocation key={`location-${resetKey}`} location={location} setLocation={setLocation} /> },
+        { title: 'Date', content: <SelectDate key={`date-${resetKey}`} selectedDate={selectedDate} setSelectedDate={setSelectedDate} /> },
+        { title: 'Condition', content: <SelectCondition key={`condition-${resetKey}`} activeSection={condition} setActiveSection={setCondition} />  },
+        { title: 'Services', content: <SelectService key={`services-${resetKey}`} selectedServices={selectedServices} setSelectedServices={setSelectedServices} />  },
     ];
 
     const renderSectionTitle = (section) => {
@@ -73,25 +86,41 @@ const FilterScreen = () => {
         setActiveSections(activeSections);
     };
 
+    const handleClearAll = () => {
+        setPrice({ low: 0, high: 1000 });
+        setLocation("Any Location");
+        setSelectedDate(null);
+        setCondition(["Any direction"]);
+        setSelectedServices(["Any Service"]);
+        setActiveSections([]);
+        setResetKey(prev => prev + 1);
+    };
+
+    if (loading) {
+        return <Loading />;
+    }
+
     return (
       <>
         <View style = {styles.pgcontainer}>
-            <ScrollView style = {{flex:1,}}>
+            <ScrollView style = {{flex:1}}>
                 <PageHeader text = {"Filters"} />
-                <Accordion
-                    activeSections={activeSections}
-                    sections={sections}
-                    renderSectionTitle={renderSectionTitle}
-                    renderHeader={renderHeader}
-                    renderContent={renderContent}
-                    onChange={updateSections}
-                />
-                <View style = {{height: 30}}></View>
+                <View style = {{margin: 20}}>
+                    <Accordion
+                        activeSections={activeSections}
+                        sections={sections}
+                        renderSectionTitle={renderSectionTitle}
+                        renderHeader={renderHeader}
+                        renderContent={renderContent}
+                        onChange={updateSections}
+                    />
+                </View>
+                
             </ScrollView>
             
         </View>
         <View style = {styles.buttoncontainer}>
-              <Pressable onPress={() => navigation.navigate("Filter")} style = {styles.leftbutton}><Text style = {styles.leftbtnletter}>Clear All</Text></Pressable>
+              <Pressable onPress={() => handleClearAll()} style = {styles.leftbutton}><Text style = {styles.leftbtnletter}>Clear All</Text></Pressable>
               <Pressable onPress={() => filterClinics()} style = {styles.rightbutton}><Text style = {styles.rightbtnletter}>Show Results</Text></Pressable>
         </View>
       </>
@@ -101,7 +130,6 @@ const FilterScreen = () => {
 
 const styles = StyleSheet.create({
     pgcontainer: {
-        padding: 20,
         flex: 1,
         backgroundColor: "#fafafa",
     },
@@ -120,8 +148,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3, // iOS
         shadowRadius: 4, // iOS
         elevation: 2, // Android
-        borderWidth: 1,
-        borderColor: "#ececec"
     },
     activeHeader: {
         padding: 10,
@@ -130,6 +156,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 16,
         borderWidth: 1,
         borderBottomWidth:0,
+        borderTopWidth:0,
         borderColor: "#dedede",
         height: 60,
         justifyContent: "center",

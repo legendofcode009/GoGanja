@@ -15,7 +15,7 @@ const ClinicCard = ({clinic}) => {
   return (
     <View style={styles.card}>
       <View style = {{borderRadius: 20, width: "100%", height: 254, borderWidth: 0, borderColor:"#3333ff", overflow: "hidden"}}>
-        <Pressable onPress = {() => {navigation.navigate("Clinic", {clinic: clinic.id})}}>
+        <Pressable onPress = {() => {navigation.navigate("Clinic", {clinicId: clinic.id})}}>
           <Image
             source={{ uri: clinic.featuredImage }}
             style={styles.image}

@@ -12,6 +12,7 @@ import {
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import ClinicCard from "../components/ClinicCard.js";
+import Loading from "../components/Loading.js";
 
 const SearchScreen = () => {
   const navigation = useNavigation();
@@ -20,7 +21,7 @@ const SearchScreen = () => {
   const initialQuery = route.params?.searchQuery || '';
   const [results, setResults] = useState(initialResults);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     // Perform initial search with the passed query and filters
     handleSearch();
@@ -34,6 +35,7 @@ const SearchScreen = () => {
   );
 
   const handleSearch = () => {
+    setLoading(true);
     // Assuming initialResults is already filtered based on location, price range, and services
     console.log(initialResults);
     console.log(searchQuery);
@@ -41,9 +43,14 @@ const SearchScreen = () => {
       clinic.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setResults(filteredResults);
+    setLoading(false);
   };
 
   const renderClinicCard = ({ item }) => <ClinicCard clinic={item} />;
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -143,11 +150,10 @@ const styles = StyleSheet.create({
     height: 24,
   },
   pgcontainer: {
-    width: "100%",
-    height: "100%",
+    flex: 1,
     backgroundColor: "#fafafa",
     paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingVertical: 25,
     flexDirection: "column",
   },
   noResultsText: {

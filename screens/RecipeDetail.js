@@ -6,6 +6,7 @@ import {AntDesign, Entypo, Ionicons, MaterialIcons, FontAwesome} from "@expo/vec
 import { db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { useRoute } from "@react-navigation/native";
+import Loading from "../components/Loading";
 
 const RecipeDetail = () => {
     const route = useRoute();
@@ -32,7 +33,7 @@ const RecipeDetail = () => {
     }, []);
 
     if (loading) {
-        return <ActivityIndicator style = {{flex: 1, justifyContent: "center", alignItems: "center"}} size="large" color="#DEBA5C" />
+        return <Loading />
     }
 
     return(
