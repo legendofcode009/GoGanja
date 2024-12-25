@@ -144,11 +144,11 @@ const AppointmentDetail = () => {
                 <View style={styles.bottomCon}>
                     <Text style={styles.mdText}>Management of appointment</Text>
                     <View style={{ height: 16 }}></View>
-                    <Pressable style={styles.buttonCon} onPress={() => handleCancel()}><MaterialIcons size={24} color={"#DEBA5C"} name="do-not-disturb"  /><Text style={styles.mdText}>Cancel appointment</Text></Pressable>
+                    <Pressable style={styles.buttonCon} ><MaterialIcons size={24} color={"#DEBA5C"} name="do-not-disturb"  /><Text style={styles.mdText}>Cancel appointment</Text></Pressable>
                     <Divider />
-                    <Pressable style={styles.buttonCon} onPress={() => handleChange()}><Ionicons size={24} color={"#DEBA5C"} name="sync" /><Text style={styles.mdText}>Change appointment</Text></Pressable>
+                    <Pressable style={styles.buttonCon} ><Ionicons size={24} color={"#DEBA5C"} name="sync" /><Text style={styles.mdText}>Change appointment</Text></Pressable>
                     <Divider />
-                    <Pressable style={styles.buttonCon} onPress={() => handleShare()}><Ionicons size={24} color={"#DEBA5C"} name="share-social-outline" /><Text style={styles.mdText}>Share your appointment</Text></Pressable>
+                    <Pressable style={styles.buttonCon} ><Ionicons size={24} color={"#DEBA5C"} name="share-social-outline" /><Text style={styles.mdText}>Share your appointment</Text></Pressable>
                     <Divider />
                 </View>
             </ScrollView>

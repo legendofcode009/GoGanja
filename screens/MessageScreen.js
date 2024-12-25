@@ -24,9 +24,12 @@ const MessageScreen = () => {
      };
   return (
     <View style = {styles.header}>
-        <View style={styles.pageheadercontainer}>
-            <Text style={styles.headertext}>Message</Text>
-            <Ionicons size={16} style={styles.headericon} name = "search" />
+        <View style = {styles.container}>
+            <View style={styles.pageheadercontainer}>
+                <Text style={styles.headertext}>Message</Text>
+                <Ionicons size={16} style={styles.headericon} name = "search" />
+            </View>
+            <View style={styles.viewContainer}></View>
         </View>
         <View style={styles.filter}>
             <Pressable style = {selected === "all"?styles.activebutton:styles.button} onPress={() =>setSelected("all")}><Text style = {selected === "all"?styles.activeButtonText:styles.buttonText}>All</Text></Pressable>
@@ -55,32 +58,48 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "#FAFAFA",
     },
-    pageheadercontainer: {
-        flexDirection: 'row',
-        height: 126,
-        paddingTop: 54,
-        alignItems: "center",
-        justifyContent: "center",
+    container: {
+        width: "100%",
+        backgroundColor: "#fafafa",
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 1.5,
-        elevation: 1,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
+        elevation: 3,
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+      },
+    pageheadercontainer: {
+        height: 100,
+        paddingTop: 30,
+        alignItems: "center",
+        justifyContent: "center",
     },
     headertext:{
-        textAlign: "center",
         fontSize: 20,
-        fontWeight: "500"
+        color: "#314435",
+        fontWeight: "500",
     },
     headericon: {
         width: 16,
         height: 16,
+        zIndex: 3,
         position: "absolute",
-        right: 33,
-        top: 83,
+        right: 40,
+        top: 60,
     },
+    viewContainer: {
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+        width: "100%",
+        height: 30,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 16,
+        borderBottomColor: '#ECECEC',
+        borderBottomWidth: 2,
+      },
     filter: {
         flexDirection: 'row',
         height: 38,
