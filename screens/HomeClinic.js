@@ -180,11 +180,12 @@ const styles = StyleSheet.create({
   },
   footerTitle: {
     fontSize: 18,
-    fontWeight: "500",
+    fontFamily: "Lato_700Bold",
     width: '100%',
   },
   footerDescription: {
     fontSize: 14,
+    fontFamily: "Lato_400Regular",
     width: '100%',
   },
   footerSpacer: {

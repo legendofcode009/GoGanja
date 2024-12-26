@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 20,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
     },
     headerIconleft: {
         position: "absolute",
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     },
     headText: {
         fontSize: 20,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
     },
     rowContainer: {
         flexDirection: "row",
@@ -299,13 +299,14 @@ const styles = StyleSheet.create({
     },
     subheadText: {
         fontSize: 18,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
         margin: 16,
     },
     editText: {
         fontSize: 12,
         color: "#DEBA5C",
-        marginBottom: 8
+        marginBottom: 8,
+        fontFamily: "Lato_400Regular",
     },
     inputcontainer: {
         gap: 16,
@@ -342,7 +343,7 @@ const styles = StyleSheet.create({
     },
     switchText: {
         fontSize: 14,
-        fontWeight: "600"
+        fontFamily: "Lato_700Bold",
     },
     activeSwitchText: {
         color: '#314435', // Active text color
@@ -362,7 +363,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 20,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     }
 })
 

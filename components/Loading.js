@@ -62,13 +62,13 @@ const styles = StyleSheet.create({
     },
     logo: {
         width: 400,
-        height: 400,
+        height: 200,
     },
     loadingText: {
-        marginTop: 20,
-        fontSize: 16,
+        fontSize: 22,
         color: '#666',
-        fontWeight: '500'
+        //fontFamily: "PTSans_700Bold",
+        fontFamily: "Lato_700Bold",
     }
 });
 

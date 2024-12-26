@@ -136,23 +136,15 @@ const BookingClinic = () => {
             style={{ flex: 1, paddingVertical: 5 }}
           /> :
           <FlatList
-              data={recipes} // Dummy data for recipes
+              data={recipes}
               renderItem={renderRecipeItem}
               keyExtractor={item => item.id}
               ListHeaderComponent={() => (
                 <Pressable style={styles.newPress} onPress={() => navigation.navigate("OrderRecipe")}><Text style={styles.newText}>Order a recipe</Text></Pressable>
               )}
-              style={{ flex: 1, paddingVertical: 30 }}
+              style={{ flex: 1, paddingBottom: 30 }}
             />  
         }
-        {activeDropdownId !== null && (
-          <TouchableWithoutFeedback onPress={() => setActiveDropdownId(null)}>
-            <View style={styles.dropdownContainer}>
-              {/* Render the dropdown here */}
-              {/* Ensure dropdown items are interactive */}
-            </View>
-          </TouchableWithoutFeedback>
-        )}
       </View>
 
     </>
@@ -204,12 +196,12 @@ const styles = StyleSheet.create({
   },
   activeSwitchText: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Lato_700Bold",
     color: "#fafafa"
   },
   switchText: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Lato_400Regular",
     color: "#131313"
   },
   newPress: {
@@ -224,6 +216,6 @@ const styles = StyleSheet.create({
   newText: {
     color: "#fafafa",
     fontSize: 20,
-    fontWeight: "500",
+    fontFamily: "Lato_700Bold",
   }
 });

@@ -161,5 +161,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: "#808080",
+    fontFamily: "Lato_400Regular",
   },
 });

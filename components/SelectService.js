@@ -40,7 +40,7 @@ const SelectService = ({selectedServices, setSelectedServices}) =>{
         <View>
             {services.map((service, index) => (
             <Pressable key={index} style={styles.checkboxContainer} onPress={() => toggleService(service)} >
-                <Text style={{fontSize:16, flexGrow:1}}>{service}</Text>
+                <Text style={styles.checkboxLabel}>{service}</Text>
                 <CheckBox
                   containerStyle = {{padding:0, margin:0, right:0}}
                   checked={selectedServices.includes(service)}
@@ -67,7 +67,8 @@ const styles = StyleSheet.create({
       },
       checkboxLabel: {
         fontSize: 16,
-        color: "red",
+        fontFamily: "Lato_400Regular",
+        flexGrow: 1,
       },
 })
 

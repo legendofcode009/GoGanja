@@ -25,16 +25,17 @@ const styles = StyleSheet.create({
     },
     headText: {
         fontSize: 24,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
         margin: 16,
     },
     midText: {
         fontSize: 18,
+        fontFamily: "Lato_400Regular",
         marginBottom: 8 
     },
     smText: {
         fontSize: 16,
-        fontWeight: "500",
+        fontFamily: "Lato_400Regular",
         textAlign: "center",
     },
     button: {
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 20,
-        fontWeight: "500",
+        fontFamily: "Lato_400Regular",
         color: "#fafafa", 
     }
 })

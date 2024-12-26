@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     
     headerText: {
       fontSize: 20,
-      fontWeight: "600",
+      fontFamily: "Lato_700Bold",
     },
     icon: {
       position: "absolute",

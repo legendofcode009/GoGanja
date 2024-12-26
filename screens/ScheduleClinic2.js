@@ -64,7 +64,7 @@ const ScheduleClinic2 = () => {
 
     const createPanResponder = (setValue, maxValue, animValue, isHour = false) => {
         let accumulatedDelta = 0;
-        const threshold = 10; // Adjust this value to change sensitivity
+        const threshold = 40; // Adjust this value to change sensitivity
 
         return PanResponder.create({
             onStartShouldSetPanResponder: () => true,
@@ -233,14 +233,16 @@ const styles = StyleSheet.create({
     bsHeader: {
         fontSize: 20,
         marginBottom: 17,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     bsText: {
         fontSize: 16,
+        fontFamily: "Lato_400Regular",
     },
     selectedDateText: {
         fontSize: 16,
         marginVertical: 10,
+        fontFamily: "Lato_400Regular",
     },
     inputContainer: {
         flexDirection: 'row',
@@ -274,7 +276,7 @@ const styles = StyleSheet.create({
     timeText: {
         fontSize: 32,
         lineHeight: 40,
-        fontWeight: '500',
+        fontFamily: "Lato_700Bold",
     },
     buttonContainer: {
         alignItems: 'center',
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
     btText: {
         color: "#fafafa",
         fontSize: 16,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     periodSelector: {
         marginLeft: 10,
@@ -307,7 +309,7 @@ const styles = StyleSheet.create({
     periodText: {
         color: '#fafafa',
         fontSize: 18,
-        fontWeight: '500',
+        fontFamily: "Lato_700Bold",
     },
     timePickerNumbers: {
         alignItems: 'center',

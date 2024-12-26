@@ -87,8 +87,8 @@ const SelectPrice = ({ price, setPrice, clinics }) => {
                 onValueChanged={handleValueChange}
             />
             <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 20 }}>
-                <View style={styles.roundbox}><Text>${low}</Text></View>
-                <View style={styles.roundbox}><Text>${high}</Text></View>
+                <View style={styles.roundbox}><Text style={{fontFamily: "Lato_700Bold"}}>${low}</Text></View>
+                <View style={styles.roundbox}><Text style={{fontFamily: "Lato_700Bold"}}>${high}</Text></View>
             </View>
         </>
     )
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     under: {
         fontSize: 14,
         color: "#808080",
+        fontFamily: "Lato_400Regular",
     },
     slider: {
         width: '100%',

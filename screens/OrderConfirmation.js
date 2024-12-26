@@ -138,7 +138,7 @@ const OrderConfirmation = () => {
                     </Pressable>
                     
                     <View style ={{width: "100%", alignItems: "center"}}>
-                        <Text style={{textAlign: "center", fontSize: 16, margin: 8}}>Enter your contact details to complete your appointment</Text>
+                        <Text style={{textAlign: "center", fontSize: 16, margin: 8, fontFamily: "Lato_400Regular"}}>Enter your contact details to complete your appointment</Text>
                     </View>
                     
 
@@ -173,9 +173,14 @@ const OrderConfirmation = () => {
                     </View>
                     <View style = {styles.paycontainer}>
                         <View style = {styles.flexLeft}><Image style={styles.payIcon} resizeMode="cover" source={require("../assets/visa.png")} /></View>
-                        <View style = {styles.flexRight}><Text style = {[styles.bsSubheader, {marginBottom: 0,}]}>Credit Card</Text><Text style = {styles.bsSubheader}>**** **** **** 6542</Text></View>
+                        <View style = {styles.flexRight}>
+                            <Text style = {[styles.bsSubheader, {marginBottom: 5,}]}>Credit Card</Text>
+                            <Text style = {[styles.bsSubheader, {marginBottom: 0,}]}>**** **** **** 6542</Text>
+                        </View>
                     </View>
-                    <Pressable style = {styles.button} onPress={() => completeOrder()}><Text style = {styles.btText}>Complete</Text></Pressable>
+                    <Pressable style = {styles.button} onPress={() => completeOrder()}>
+                        <Text style = {styles.btText}>Complete</Text>
+                    </Pressable>
                     <View style = {{height: 80,}}></View>
                     {/* Repeat service rows as needed */}
                 </ScrollView>
@@ -208,29 +213,31 @@ const styles = StyleSheet.create({
     bsHeader: {
         fontSize: 20,
         marginBottom: 17,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     bsSubheader: {
         fontSize: 16,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
         marginBottom: 12,
     },
     dataTimeText: {
         color: "#DEBA5C",
         fontSize: 16,
         paddingLeft: 16,
+        fontFamily: "Lato_400Regular",
     },
     bsText: {
         fontSize: 16,
-        fontWeight: "600"
+        fontFamily: "Lato_700Bold",
     },
     bsSmtext: {
         fontSize: 14,
         color: "#808080",
+        fontFamily: "Lato_400Regular",
     },
     bsPricetext: {
         fontSize: 18,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     bsServicecontainer: {
         width: "100%",
@@ -247,10 +254,12 @@ const styles = StyleSheet.create({
     firstHead: {
         flex: 6,
         justifyContent: "center",
+        fontFamily: "Lato_400Regular",
     },
     secondHead: {
         flex: 3,
         justifyContent: "center",
+        fontFamily: "Lato_400Regular",
     },
     oneFlex: {
         flex: 1,
@@ -292,7 +301,7 @@ const styles = StyleSheet.create({
     btText: {
         color: "#fafafa",
         fontSize: 16,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     inputcontainer: {
         width: "100%",
@@ -334,6 +343,7 @@ const styles = StyleSheet.create({
         flex: 7,
         justifyContent: "center",
         alignItems: "center",
+        height: "100%",
     },
     gradientBorder: {
         borderRadius: 10,

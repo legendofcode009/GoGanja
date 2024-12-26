@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     headertext:{
         fontSize: 20,
         color: "#314435",
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     headericon: {
         width: 16,
@@ -129,11 +129,11 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 14,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     activeButtonText: {
         fontSize: 14,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
         color: "#FAFAFA"
     },
     messageList: {
@@ -160,15 +160,15 @@ const styles = StyleSheet.create({
     },
     messageText1: {
         fontSize: 16,
-        fontWeight: "500"
+        fontFamily: "Lato_700Bold",
     },
     messageText2: {
         fontSize: 12,
-        fontWeight: "400"
+        fontFamily: "Lato_400Regular",
     },
     messageTime: {
         fontSize:12,
-        fontWeight: "400",
+        fontFamily: "Lato_400Regular",
         color: "#808080",
         position: "absolute",
         right: 8,

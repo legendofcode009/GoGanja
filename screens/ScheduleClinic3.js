@@ -9,9 +9,9 @@ import { auth } from "../firebaseConfig";
 
 const ScheduleClinic3 = () => {
     const navigation = useNavigation();
-    const [email,setEmail] = useState();
-    const [name,setName] = useState();
-    const [phoneNumber,setPhoneNumber] = useState();
+    const [email,setEmail] = useState("");
+    const [name,setName] = useState("");
+    const [phoneNumber,setPhoneNumber] = useState("");
     const [loading, setLoading] = useState(false);
     const route = useRoute();
     const clinicId = route.params.clinicId;
@@ -182,27 +182,30 @@ const styles = StyleSheet.create({
     bsHeader: {
         fontSize: 20,
         marginBottom: 17,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     bsSubheader: {
         fontSize: 16,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
     },
     dataTimeText: {
         color: "#DEBA5C",
         fontSize: 16,
+        fontFamily: "Lato_400Regular",
         paddingLeft: 16,
     },
     bsText: {
         fontSize: 16,
+        fontFamily: "Lato_400Regular",
     },
     bsSmtext: {
         fontSize: 14,
         color: "#808080",
+        fontFamily: "Lato_400Regular",
     },
     bsPricetext: {
         fontSize: 20,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
     },
     bsServicecontainer: {
         width: "100%",
@@ -249,7 +252,7 @@ const styles = StyleSheet.create({
     btText: {
         color: "#fafafa",
         fontSize: 16,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     inputcontainer: {
         width: "100%",

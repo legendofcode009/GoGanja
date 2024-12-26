@@ -57,7 +57,7 @@ const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment, clinic }
           minute: '2-digit'
         }).replace(',', ' -') : ''}
           </Text>
-          <Text style={styles.smText}>{appointment?.totalPrice}</Text>
+          <Text style={styles.smText}>{appointment?.totalPrice.toFixed(2)}</Text>
         </View>
         <TouchableOpacity
           style={styles.threeDot}
@@ -71,19 +71,19 @@ const AppointmentCard = ({ isDropdownOpen, toggleDropdown, appointment, clinic }
               style={styles.dropdownItem} 
               onPress={() => handleOptionPress('cancel')}
             >
-              <Text>Cancel Appointment</Text>
+              <Text style={styles.dropdownItemText}>Cancel Appointment</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.dropdownItem} 
               onPress={() => handleOptionPress('change')}
             >
-              <Text>Change Appointment</Text>
+              <Text style={styles.dropdownItemText}>Change Appointment</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.dropdownItem} 
               onPress={() => handleOptionPress('share')}
             >
-              <Text>Share</Text>
+              <Text style={styles.dropdownItemText}>Share</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -115,11 +115,12 @@ const styles = StyleSheet.create({
   },
   headText: {
     fontSize: 18,
-    fontWeight: "500",
+    fontFamily: "Lato_700Bold",
   },
   timeText: {
     fontSize: 16,
     color: "#808080",
+    fontFamily: "Lato_400Regular",
   },
   rowContainer: {
     flexDirection: "row",
@@ -144,11 +145,13 @@ const styles = StyleSheet.create({
   },
   bgText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: "Lato_700Bold",
     marginBottom: 8,
   },
   smText: {
     fontSize: 14,
+    marginVertical: 2,
+    fontFamily: "Lato_400Regular",
   },
   threeDot: {
     position: "absolute",
@@ -180,6 +183,10 @@ const styles = StyleSheet.create({
   againText: {
     fontSize: 16,
     color: "#DEBA5C",
+    fontFamily: "Lato_700Bold",
+  },
+  dropdownItemText: {
+    fontFamily: "Lato_400Regular",
   }
 
 })

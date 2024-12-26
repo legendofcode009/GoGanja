@@ -67,11 +67,11 @@ const styles = StyleSheet.create({
     },
     locationText: {
         fontSize: 14,
-        fontWeight: "600",
+        fontFamily: "Lato_400Regular",
     },
     activeLocationText: {
         fontSize: 14 ,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
         color: "#fafafa"
     }
 })

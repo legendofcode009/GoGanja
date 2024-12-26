@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   clinicName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: "Lato_700Bold",
   },
   rating: {
     fontSize: 14,
@@ -72,11 +72,12 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 14,
+    fontFamily: "Lato_400Regular",
     color: '#090A09',
   },
   consultFee: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: "Lato_700Bold",
     marginTop: 8,
   },
 });

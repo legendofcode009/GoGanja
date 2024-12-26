@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   headertext: {
     fontSize: 20,
     color: "#314435",
-    fontWeight: "500",
+    fontFamily: 'Lato_700Bold',
   },
   headericon: {
     width: 16,
@@ -80,14 +80,13 @@ const styles = StyleSheet.create({
   },
   headerItem: {
     color: '#090A09',
-    fontSize: 16,
     width: 80,
     height: 30,
-    textAlign: 'center'
   },
   headerItemText: {
     fontSize: 16,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'Lato_400Regular',
   },
   headerItemSelected: {
     borderBottomColor: '#DEBA5C',
@@ -96,6 +95,7 @@ const styles = StyleSheet.create({
   headerItemSelectedText: {
     color: '#DEBA5C',
     fontSize: 16,
+    fontFamily: 'Lato_400Regular',
     textAlign: 'center'
   }
 });

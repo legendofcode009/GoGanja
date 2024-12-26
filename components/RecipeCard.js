@@ -53,7 +53,7 @@ const RecipeCard = ({ isDropdownOpen, toggleDropdown, recipe }) => {
           <Entypo name="dots-three-vertical" size={16} />
         </TouchableOpacity>
       </Pressable>
-      <View style={styles.stateCon}><Text style = {{color: "#DEBA5C"}}>{recipe?.status}</Text></View>
+      <View style={styles.stateCon}><Text style = {{color: "#DEBA5C", fontFamily: "Lato_700Bold_Italic"}}>{recipe?.status}</Text></View>
       <Divider color='#aaaaaa' />
       <View style={styles.agianContainer}>
         <Text style={styles.againText}><Ionicons size={24} color={"#DEBA5C"} name="sync" />   Order the recipe again</Text>
@@ -64,19 +64,19 @@ const RecipeCard = ({ isDropdownOpen, toggleDropdown, recipe }) => {
               style={styles.dropdownItem} 
               onPress={() => handleOptionPress('cancel')}
             >
-              <Text>Cancel Appointment</Text>
+              <Text style={styles.dropdownItemText}>Cancel Appointment</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.dropdownItem} 
               onPress={() => handleOptionPress('change')}
             >
-              <Text>Change Appointment</Text>
+              <Text style={styles.dropdownItemText}>Change Appointment</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.dropdownItem} 
               onPress={() => handleOptionPress('share')}
             >
-              <Text>Share</Text>
+              <Text style={styles.dropdownItemText}>Share</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -107,10 +107,12 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   dropdownItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    padding: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: "#ccc",
+  },
+  dropdownItemText: {
+    fontFamily: "Lato_400Regular",
   },
   headContainer: {
     padding: 20,
@@ -118,11 +120,12 @@ const styles = StyleSheet.create({
   },
   headText: {
     fontSize: 18,
-    fontWeight: "500",
+    fontFamily: "Lato_700Bold",
   },
   timeText: {
     fontSize: 16,
     color: "#808080",
+    fontFamily: "Lato_400Regular",
   },
   rowContainer: {
     flexDirection: "row",
@@ -136,11 +139,12 @@ const styles = StyleSheet.create({
   },
   bgText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: "Lato_700Bold",
   },
   smText: {
     fontSize: 14,
     marginBottom: 8,
+    fontFamily: "Lato_400Regular",
   },
   stateCon: {
     margin: 8,
@@ -155,12 +159,13 @@ const styles = StyleSheet.create({
   },
   agianContainer: {
     height: 43,
-    padding: 8,
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: "center"
   },
   againText: {
     fontSize: 16,
     color: "#DEBA5C",
+    fontFamily: "Lato_700Bold",
   }
 });
 

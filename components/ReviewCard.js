@@ -40,17 +40,24 @@ const styles = StyleSheet.create({
     cardcontent: {
         flex: 1,
         fontSize: 14,
+        fontFamily: "Lato_400Regular",
         overflow: "hidden"
     },
     cardmore: { 
         color: "#DEBA5C",
         fontSize: 12,
+        fontFamily: "Lato_400Regular",
         textDecorationLine: "underline",
     },
     cardbottom: {
         marginTop: 8,
         height:40,
         flexDirection: "row",
+    },
+    smtext: {
+        fontFamily: "Lato_400Regular",
+        fontSize: 12,
+        color: "#808080",
     },
     circleimage: {
         width:40,
@@ -59,11 +66,13 @@ const styles = StyleSheet.create({
     },
     cardbgtext: {
         fontSize: 14,
+        fontFamily: "Lato_700Bold",
         color: "#011004"
     },
     cardsmtext: {
         fontSize:12,
         color: "#808080",
+        fontFamily: "Lato_400Regular",
     },
     cardrating: {
         fontSize: 10,

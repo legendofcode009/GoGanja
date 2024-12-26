@@ -110,11 +110,12 @@ const styles = StyleSheet.create({
     },
     subHeader:{
         fontSize: 14,
-        fontWeight:"500",
+        fontFamily: "Lato_700Bold",
     },
     contactText: {
         fontSize: 14,
         color: "#DEBA5C",
+        fontFamily: "Lato_400Regular",
     },
     rowCon: {
         marginHorizontal: 20,
@@ -124,11 +125,11 @@ const styles = StyleSheet.create({
     },
     titleText: {
         fontSize: 18, 
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     mdText: {
         fontSize: 16,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     priceRow:{
         flexDirection: "row",
@@ -141,6 +142,7 @@ const styles = StyleSheet.create({
         color: "#DEBA5C",
         fontSize:16,
         textAlign: "center",
+        fontFamily: "Lato_700Bold_Italic",
     },
     bottomCon: {
         marginVertical: 24,
@@ -151,9 +153,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 6,
         marginVertical: 5,
+        paddingVertical: 3,
     },
     buttonText: {
         fontSize: 16,
+        fontFamily: "Lato_400Regular",
     }
 })
 

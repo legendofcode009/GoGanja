@@ -244,30 +244,32 @@ const styles = StyleSheet.create({
     },
     name: {
         fontSize: 20,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
         marginTop: 4,
         marginBottom: 8,
     },
     header: {
         fontSize: 18,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
     }, 
     maintext: {
         fontSize: 16,
         flex:1, 
+        fontFamily: "Lato_400Regular",
     },
     ratingtext: {
         fontSize: 14,
-        fontWeight: "500",
+        fontFamily: "Lato_400Regular",
         flex:1, 
     },
     smalltext: {
         fontSize: 12,     
         flex:1,
+        fontFamily: "Lato_400Regular",
     },
     pricetext: {
         fontSize: 20,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
         color: "#B1D5B9",
         position: "absolute",
         right: 0,
@@ -304,6 +306,7 @@ const styles = StyleSheet.create({
         color: "#DEBA5C",
         fontSize: 16,
         textDecorationLine: "underline",
+        fontFamily: "Lato_400Regular",
     },
     mapcontainer: {
         height: 130,

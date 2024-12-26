@@ -131,13 +131,15 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 14,
-        fontWeight: "600"
+        fontFamily: "Lato_400Regular",
     },
     activeText: {
         color: '#090A09', // Active text color
+        fontFamily: "Lato_700Bold",
     },
     inactiveText: {
         color: '#fafafa', // Inactive text color
+        fontFamily: "Lato_400Regular",
     },
     monthItem: {
         flex: 1,
@@ -151,11 +153,11 @@ const styles = StyleSheet.create({
     },
     monthText: {
         fontSize: 16,
-        fontWeight: "500"
+        fontFamily: "Lato_700Bold"
     },
     yearText: {
         fontSize: 14,
-        fontWeight: "500",
+        fontFamily: "Lato_400Regular",
         color: "#808080"
     },
     row: {

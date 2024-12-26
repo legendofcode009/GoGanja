@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fafafa",
     },
     sectionTitle: {
-        fontWeight: 'bold',
+        fontFamily: "Lato_700Bold",
         padding: 10,
     },
     header: {
@@ -163,12 +163,12 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 16,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
         color: "#808080",
     },
     activetitle: {
         fontSize: 18,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
         color: "#090A09",
     },
     content: {
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     },
     leftbtnletter: {
       fontSize: 16,
-      fontWeight: "500",
+      fontFamily: "Lato_400Regular",
     },
     rightbutton: {
       width: '45%',
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     },
     rightbtnletter: {
       fontSize: 16,
-      fontWeight: "500",
+      fontFamily: "Lato_400Regular",
       color: "#fafafa",
     },
 });

@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
       checkboxLabel: {
         fontSize: 16,
         flexGrow: 1,
+        fontFamily: "Lato_400Regular",
       },
 })
 

@@ -76,7 +76,7 @@ const RegisterScreen = () => {
             <View style={styles.topcontainer}></View>
             <KeyboardAvoidingView style={styles.container}>
                 <Image style={styles.image} source={require('../assets/Logo.png')} />
-                <View>
+                <View style = {{alignItems: "center", gap: 8}}>
                     <Text style={styles.title}>Register your account</Text>
                     <Text style={styles.subtitle}>Enter your details to register</Text>
                 </View>
@@ -87,6 +87,7 @@ const RegisterScreen = () => {
                         onChangeText={(text) => setName(text)}
                         placeholder="Name"
                         placeholderTextColor={"#808080"}
+                        placeholderFont
                         style={styles.textinput}
                     />
                     <TextInput
@@ -124,16 +125,16 @@ const RegisterScreen = () => {
                     onPress={register} // Call register function on press
                     style={styles.button}
                 >
-                    <Text style={{fontSize: 20, color: "#fafafa", fontWeight: "500"}}>
+                    <Text style={{fontSize: 20, color: "#fafafa", fontFamily: "Lato_400Regular"}}>
                         Register
                     </Text>
                 </Pressable>
                 <View style={{ justifyContent: "center", alignItems: "center" }}>
-                    <Text style={{ color: "#090A09", fontSize: 16, fontWeight: "500", marginVertical: 8 }}>
+                    <Text style={{ color: "#090A09", fontSize: 16, fontFamily: "Lato_400Regular", marginVertical: 8 }}>
                         Do you have an account?
                     </Text>
                     <Pressable onPress={() => navigation.navigate("Login")}>
-                        <Text style={{ color: "#DEBA5C", fontSize: 16, fontWeight: "500", textDecorationLine: "underline" }}>
+                        <Text style={{ color: "#DEBA5C", fontSize: 16, fontFamily: "Lato_700Bold", textDecorationLine: "underline" }}>
                             Login
                         </Text>
                     </Pressable>
@@ -169,12 +170,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "600",
+    fontFamily: "Lato_700Bold",
     color: "#090A09",
   },
   subtitle: {
     fontSize: 16,
-    fontWeight: "400",
+    fontFamily: "Lato_400Regular",
     color: "#090A09",
   },
   inputcontainer: {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, Image, StyleSheet, TextInput, ScrollView, SafeAreaView, Dimensions, Pressable } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import {Ionicons, ionicons} from "@expo/vector-icons";
+import {Ionicons} from "@expo/vector-icons";
 import { Icon, Divider } from '@rneui/themed';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
@@ -141,23 +141,25 @@ const styles = StyleSheet.create({
     bsHeader: {
         fontSize: 20,
         marginBottom: 17,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     bsSubheader: {
         fontSize: 16,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
         marginBottom: 8,
     },
     bsText: {
         fontSize: 16,
+        fontFamily: "Lato_400Regular",
     },
     bsSmtext: {
         fontSize: 14,
         color: "#808080",
+        fontFamily: "Lato_400Regular",
     },
     bsPricetext: {
         fontSize: 20,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
     },
     bsServicecontainer: {
         width: "100%",
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
     btText: {
         color: "#fafafa",
         fontSize: 16,
-        fontWeight: "500",
+        fontFamily: "Lato_400Regular",
     }
 });
 

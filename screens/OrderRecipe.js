@@ -72,7 +72,8 @@ const OrderRecipe = () => {
                         }}
                         onEndEditing={() => {}}
                     >
-                    </TextInput><Feather name="search" size={20} color="#808080" style = {{position: "absolute", left: 15, top: 15}} />
+                    </TextInput>
+                    <Feather name="search" size={20} color="#808080" style = {{position: "absolute", left: 15, top: 15}} />
                 </View>
                 <ScrollView style={styles.bsServicecontainer}>
                     <View style={[styles.bsServicerow, { marginBottom: 5 }]}>
@@ -134,23 +135,25 @@ const styles = StyleSheet.create({
     bsHeader: {
         fontSize: 20,
         marginBottom: 17,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     },
     bsSubheader: {
         fontSize: 16,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
         marginBottom: 8,
     },
     bsText: {
         fontSize: 16,
+        fontFamily: "Lato_400Regular",
     },
     bsSmtext: {
         fontSize: 14,
         color: "#808080",
+        fontFamily: "Lato_400Regular",
     },
     bsPricetext: {
         fontSize: 20,
-        fontWeight: "600",
+        fontFamily: "Lato_700Bold",
     },
     bsServicecontainer: {
         width: "100%",
@@ -199,7 +202,7 @@ const styles = StyleSheet.create({
     btText: {
         color: "#fafafa",
         fontSize: 16,
-        fontWeight: "500",
+        fontFamily: "Lato_700Bold",
     }
 });
 
