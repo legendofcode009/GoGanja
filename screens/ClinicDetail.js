@@ -9,6 +9,7 @@ import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import Loading from "../components/Loading.js";
 import { Rating } from 'react-native-ratings';
+import MapView, { Marker } from 'react-native-maps';
 
 const ClinicScreen = () => {
     const Navigation = useNavigation();
@@ -19,7 +20,11 @@ const ClinicScreen = () => {
     const [showAllServices, setShowAllServices] = useState(false);
     const maxVisibleServices = 4;
     const [loading, setLoading] = useState(true);
-    const ratingimage = require("../assets/star.png");
+    const [mapLoaded, setMapLoaded] = useState(false);
+    const [mapRegion, setMapRegion] = useState(null);
+    const [mapError, setMapError] = useState(null);
+    const [latitude, setLatitude] = useState(13.75);
+    const [longitude, setLongitude] = useState(100.516999);
 
     useEffect(() => {
         const fetchClinic = async () => {
@@ -154,8 +159,25 @@ const ClinicScreen = () => {
                         <Divider style={styles.divider} orientation="horizontal" />
                         <View>
                             <Text style={styles.header}>Location</Text>
-                            <View style = {styles.mapcontainer}><Image style= {{resizeMode: "cover"}} source={require("../assets/map.png")} /></View>
-                            <Text style = {{fontSize: 14,}}>{clinic.address}</Text>
+                            <MapView
+                                style={styles.mapcontainer}
+                                initialRegion={{
+                                    latitude: latitude, // Replace with actual latitude
+                                    longitude: longitude, // Replace with actual longitude
+                                    latitudeDelta: 0.0922,
+                                    longitudeDelta: 0.0421,
+                                }}
+                            >
+                                <Marker
+                                    coordinate={{
+                                        latitude: latitude, // Replace with actual latitude
+                                        longitude: longitude, // Replace with actual longitude
+                                    }}
+                                    title={clinic.name}
+                                    description={clinic.address}
+                                />
+                            </MapView>
+                            <Text style={{ fontSize: 14 }}>{clinic.address}</Text>
                         </View>
                         
                         <Divider style={styles.divider} orientation="horizontal" /> 
@@ -309,14 +331,16 @@ const styles = StyleSheet.create({
         fontFamily: "Lato_400Regular",
     },
     mapcontainer: {
-        height: 130,
+        height: 150,
         width: "100%",
-        maxWidth: 350,
+        maxWidth: 500,
         marginVertical: 16,
         overflow: "hidden",
         borderRadius: 24,
-        borderWidth: 0,
+        borderWidth: 1,
+        borderColor: "#000",
         marginHorizontal: "auto",
+        elevation: 0.8,
     },
     reviewcontainer: {
         height: 258,
